@@ -51,7 +51,7 @@ class TelegramService : Service() {
         return START_STICKY
     }
     
-    private fun initialize(context: Context) {
+    fun initialize(context: Context) {
         this.database = MonitoringDatabase.getDatabase(context)
         val sharedPrefs = context.getSharedPreferences("telegram_config", Context.MODE_PRIVATE)
         botToken = sharedPrefs.getString("bot_token", null)
@@ -286,16 +286,17 @@ class TelegramService : Service() {
     }
     
     private fun isOnline(): Boolean {
-        context?.let { ctx ->
-            val connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return try {
+            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val network = connectivityManager.activeNetwork ?: return false
             val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
             
-            return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                     networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
                     networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+        } catch (e: Exception) {
+            false
         }
-        return false
     }
     
     private fun formatAppUsageMessage(usageData: List<AppUsageData>): String {
@@ -371,6 +372,12 @@ class TelegramService : Service() {
                 .putString("bot_token", botToken)
                 .putString("chat_id", chatId)
                 .apply()
+        }
+        
+        fun initialize(context: Context) {
+            // Start the service to initialize it
+            val intent = Intent(context, TelegramService::class.java)
+            context.startService(intent)
         }
         
         fun getTelegramConfig(context: Context): Pair<String?, String?> {
