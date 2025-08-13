@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Parental Control Monitor</string>
+    <string name="accessibility_service_description">This service monitors social media apps for parental control purposes. It tracks app usage and content for child safety.</string>
+</resources>

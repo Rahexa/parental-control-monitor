@@ -1,0 +1,112 @@
+name: Bug Report
+description: File a bug report for the Parental Control Monitor app
+title: "[BUG] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! This helps us improve the app.
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      description: What device are you using?
+      options:
+        - Huawei Nova 3i
+        - Other Huawei device
+        - Other Android device
+    validations:
+      required: true
+
+  - type: input
+    id: android-version
+    attributes:
+      label: Android Version
+      description: What version of Android are you running?
+      placeholder: e.g., Android 8.1, EMUI 8.2
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App Version
+      description: What version of the app are you using?
+      placeholder: e.g., 1.0.0, nightly-20250813
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: Describe what happened...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened instead
+    validations:
+      required: true
+
+  - type: dropdown
+    id: monitoring-feature
+    attributes:
+      label: Related Feature
+      description: Which monitoring feature is affected?
+      options:
+        - Notification monitoring
+        - SMS/Call monitoring
+        - Location tracking
+        - Gallery monitoring
+        - App usage tracking
+        - Telegram integration
+        - Background service
+        - Permissions
+        - Huawei optimizations
+        - Other
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here, including screenshots if applicable
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgments
+      options:
+        - label: I have read the setup guide for my device
+        - label: I have granted all required permissions
+        - label: I am using this app for legitimate parental control purposes
+          required: true

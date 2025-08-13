@@ -1,0 +1,129 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+
+    - name: Extract version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Update version in build.gradle
+      run: |
+        VERSION_NAME="${{ steps.get_version.outputs.VERSION }}"
+        VERSION_CODE=$(git rev-list --count HEAD)
+        sed -i "s/versionName \".*\"/versionName \"${VERSION_NAME#v}\"/" app/build.gradle
+        sed -i "s/versionCode .*/versionCode ${VERSION_CODE}/" app/build.gradle
+
+    - name: Build release APK
+      run: ./gradlew assembleRelease
+
+    - name: Build debug APK
+      run: ./gradlew assembleDebug
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+        git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD~1)..HEAD >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.VERSION }}
+        release_name: Parental Control Monitor ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## What's New in ${{ steps.get_version.outputs.VERSION }}
+          
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ## Download
+          
+          ### For Huawei Nova 3i Users:
+          - Download `ParentalControlMonitor-Release.apk` for production use
+          - Download `ParentalControlMonitor-Debug.apk` for testing
+          
+          ### Installation Instructions:
+          1. Enable "Unknown Sources" in Settings → Security
+          2. Download the APK file
+          3. Install the APK
+          4. Follow the Huawei Nova 3i setup guide in the app
+          
+          ### Features:
+          - 📱 Real-time notification monitoring
+          - 📍 GPS location tracking  
+          - 💬 SMS and call monitoring
+          - 📸 Gallery and media monitoring
+          - 🔒 Stealth mode operation
+          - 💾 Offline data storage
+          - 🔄 Telegram bot integration
+          - ⚡ Huawei Nova 3i optimizations
+          
+          ## Security Notice
+          ⚠️ This app is for legitimate parental control purposes only. Ensure compliance with local laws and regulations.
+        draft: false
+        prerelease: false
+
+    - name: Upload Release APK
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: app/build/outputs/apk/release/app-release-unsigned.apk
+        asset_name: ParentalControlMonitor-Release.apk
+        asset_content_type: application/vnd.android.package-archive
+
+    - name: Upload Debug APK
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: app/build/outputs/apk/debug/app-debug.apk
+        asset_name: ParentalControlMonitor-Debug.apk
+        asset_content_type: application/vnd.android.package-archive
+
+    - name: Upload Huawei Setup Guide
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: HUAWEI_NOVA_3I_SETUP.md
+        asset_name: Huawei-Nova-3i-Setup-Guide.md
+        asset_content_type: text/markdown
