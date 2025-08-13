@@ -86,10 +86,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="parentalcontrol" android:host="open" />
             </intent-filter>
-        </activity>
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="parentalcontrol" android:host="open" />
-            </intent-filter>
+            
             <!-- Dial code entry -->
             <intent-filter>
                 <action android:name="android.intent.action.CALL_PRIVILEGED" />
