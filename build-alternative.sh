@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+# Don't use set -e so we can see errors and continue
 
 echo "=== Alternative approach: Download Gradle directly ==="
 
@@ -24,15 +24,36 @@ gradle --version
 echo "Listing projects:"
 gradle projects
 
-echo "Building debug APK:"
-gradle :app:assembleDebug
+echo "=== Attempting to build debug APK ==="
+gradle :app:assembleDebug --stacktrace --info
+DEBUG_EXIT_CODE=$?
 
-echo "Building release APK:"
-gradle :app:assembleRelease
+if [ $DEBUG_EXIT_CODE -eq 0 ]; then
+    echo "=== Debug build successful! ==="
+else
+    echo "=== Debug build failed with exit code $DEBUG_EXIT_CODE ==="
+fi
 
-echo "=== Build completed successfully! ==="
-echo "Debug APK location: app/build/outputs/apk/debug/"
-echo "Release APK location: app/build/outputs/apk/release/"
+echo "=== Attempting to build release APK ==="
+gradle :app:assembleRelease --stacktrace --info
+RELEASE_EXIT_CODE=$?
 
-# List the generated APKs
-find app/build/outputs/apk -name "*.apk" -type f
+if [ $RELEASE_EXIT_CODE -eq 0 ]; then
+    echo "=== Release build successful! ==="
+else
+    echo "=== Release build failed with exit code $RELEASE_EXIT_CODE ==="
+fi
+
+echo "=== Build summary ==="
+echo "Debug build exit code: $DEBUG_EXIT_CODE"
+echo "Release build exit code: $RELEASE_EXIT_CODE"
+
+# List any generated APKs
+echo "Looking for generated APKs..."
+find app/build/outputs/apk -name "*.apk" -type f 2>/dev/null || echo "No APKs found"
+
+# Exit with error if both builds failed
+if [ $DEBUG_EXIT_CODE -ne 0 ] && [ $RELEASE_EXIT_CODE -ne 0 ]; then
+    echo "Both builds failed!"
+    exit 1
+fi

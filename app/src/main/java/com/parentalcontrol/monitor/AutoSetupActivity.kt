@@ -11,6 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.parentalcontrol.monitor.services.MonitoringService
+import com.parentalcontrol.monitor.services.LocationService
+import com.parentalcontrol.monitor.services.TelegramService
+import com.parentalcontrol.monitor.utils.DeviceUtils
+import com.parentalcontrol.monitor.utils.HuaweiOptimizationHelper
+import com.parentalcontrol.monitor.utils.ServiceUtils
+import com.parentalcontrol.monitor.utils.JobSchedulerHelper
 
 class AutoSetupActivity : AppCompatActivity() {
     

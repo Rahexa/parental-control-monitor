@@ -22,7 +22,6 @@ class PermissionHelper(private val activity: Activity) {
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.FOREGROUND_SERVICE,
-            Manifest.permission.BOOT_COMPLETED,
             Manifest.permission.RECEIVE_BOOT_COMPLETED
         )
         
