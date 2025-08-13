@@ -35,14 +35,14 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x gradlew
 
-    - name: Clean project
-      run: ./gradlew clean
+    - name: List available tasks
+      run: ./gradlew tasks --all
 
     - name: Build debug APK
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Build release APK
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleRelease --stacktrace
 
     - name: Sign APK
       uses: r0adkll/sign-android-release@v1

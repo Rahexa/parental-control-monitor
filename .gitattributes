@@ -4,5 +4,9 @@ gradlew text eol=lf
 # Ensure Windows batch files use Windows line endings
 *.bat text eol=crlf
 
+# Ensure YAML files use Unix line endings
+*.yml text eol=lf
+*.yaml text eol=lf
+
 # Auto-detect text files and perform LF normalization for other files
 * text=auto
