@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Exclude specific files or directories from backup -->
-    <exclude domain="sharedpref" path="device_preferences" />
-    <exclude domain="database" path="monitoring.db" />
+    <!-- Allow most app data to be backed up -->
 </full-backup-content>

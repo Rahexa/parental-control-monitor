@@ -1,9 +1,12 @@
 package com.parentalcontrol.monitor.services
 
+import android.app.Service
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.IBinder
 import com.parentalcontrol.monitor.api.TelegramApi
 import com.parentalcontrol.monitor.database.MonitoringDatabase
 import com.parentalcontrol.monitor.models.AppUsageData
@@ -17,17 +20,38 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TelegramService {
+class TelegramService : Service() {
+    
+    override fun onBind(intent: Intent?): IBinder? = null
     
     private var telegramApi: TelegramApi? = null
     private var botToken: String? = null
     private var chatId: String? = null
-    private var context: Context? = null
     private var database: MonitoringDatabase? = null
     private val scope = CoroutineScope(Dispatchers.IO)
     
-    fun initialize(context: Context) {
-        this.context = context
+    override fun onCreate() {
+        super.onCreate()
+        initialize(this)
+    }
+    
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            when (it.getStringExtra("action")) {
+                "send_message" -> {
+                    val message = it.getStringExtra("message")
+                    if (message != null) {
+                        scope.launch {
+                            sendMessage(message)
+                        }
+                    }
+                }
+            }
+        }
+        return START_STICKY
+    }
+    
+    private fun initialize(context: Context) {
         this.database = MonitoringDatabase.getDatabase(context)
         val sharedPrefs = context.getSharedPreferences("telegram_config", Context.MODE_PRIVATE)
         botToken = sharedPrefs.getString("bot_token", null)
