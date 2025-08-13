@@ -22,6 +22,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Make gradlew executable
+        run: |
+          git config --global core.autocrlf input
+          dos2unix gradlew || true
+          chmod +x gradlew
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -32,14 +38,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+      - name: List Gradle tasks
+        run: ./gradlew tasks --all
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew :app:assembleDebug
 
       - name: Build release APK
-        run: ./gradlew assembleRelease
+        run: ./gradlew :app:assembleRelease
 
       - name: Sign APK
         if: github.event_name == 'release'
@@ -91,6 +97,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Make gradlew executable
+        run: |
+          git config --global core.autocrlf input
+          dos2unix gradlew || true
+          chmod +x gradlew
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -100,9 +112,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
 
       - name: Run unit tests
         run: ./gradlew test --stacktrace --info
