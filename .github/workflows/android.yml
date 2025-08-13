@@ -30,8 +30,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Make build script executable
-        run: chmod +x build-android.sh
+      - name: Make scripts executable
+        run: |
+          chmod +x build-android.sh
+          chmod +x build-minimal.sh
+          chmod +x build-alternative.sh
 
-      - name: Run build script
+      - name: Debug gradlew
         run: ./build-android.sh
+
+      - name: Try minimal build
+        if: failure()
+        run: ./build-minimal.sh
+
+      - name: Try alternative build
+        if: failure()
+        run: ./build-alternative.sh
