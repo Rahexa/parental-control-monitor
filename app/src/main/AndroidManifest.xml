@@ -39,7 +39,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     
     <!-- Job scheduler for Huawei devices -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     
     <!-- Accessibility permission for monitoring apps -->
