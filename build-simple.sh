@@ -1,5 +1,5 @@
 #!/bin/bash
-# Simplified build script with better error reporting
+set -e  # Exit on any error
 
 echo "=== Alternative approach: Download Gradle directly ==="
 
@@ -21,11 +21,15 @@ export PATH=${GRADLE_HOME}/bin:$PATH
 echo "Using Gradle version:"
 gradle --version
 
-echo "Listing projects:"
+echo "Checking project structure:"
 gradle projects
 
-echo "Building debug APK:"
-gradle :app:assembleDebug --stacktrace
+echo "Clean and build debug APK:"
+gradle clean :app:assembleDebug
 
-echo "Building release APK:"
-gradle :app:assembleRelease --stacktrace
+echo "Build release APK:"
+gradle :app:assembleRelease
+
+echo "=== Build completed successfully ==="
+echo "Debug APK: $(find app/build/outputs/apk/debug -name "*.apk" 2>/dev/null || echo "Not found")"
+echo "Release APK: $(find app/build/outputs/apk/release -name "*.apk" 2>/dev/null || echo "Not found")"
