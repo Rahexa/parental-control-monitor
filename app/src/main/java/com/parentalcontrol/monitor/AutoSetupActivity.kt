@@ -197,8 +197,8 @@ class AutoSetupActivity : AppCompatActivity() {
                 val message = """
                 🎯 Parental Control Monitor - Setup Complete!
                 
-                📱 Device: ${deviceInfo.model}
-                🔋 Battery: ${deviceInfo.batteryLevel}%
+                📱 Device: ${DeviceUtils.model}
+                🔋 Battery: ${DeviceUtils.batteryLevel(this@AutoSetupActivity)}%
                 📍 Location: ${if (PermissionHelper.hasLocationPermission(this@AutoSetupActivity)) "Enabled" else "Disabled"}
                 🔔 Notifications: ${if (PermissionHelper.isNotificationAccessGranted(this@AutoSetupActivity)) "Enabled" else "Disabled"}
                 ♿ Accessibility: ${if (PermissionHelper.isAccessibilityServiceEnabled(this@AutoSetupActivity)) "Enabled" else "Disabled"}
