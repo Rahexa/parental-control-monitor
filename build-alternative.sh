@@ -24,5 +24,15 @@ gradle --version
 echo "Listing projects:"
 gradle projects
 
-echo "Building project:"
-gradle build
+echo "Building debug APK:"
+gradle :app:assembleDebug
+
+echo "Building release APK:"
+gradle :app:assembleRelease
+
+echo "=== Build completed successfully! ==="
+echo "Debug APK location: app/build/outputs/apk/debug/"
+echo "Release APK location: app/build/outputs/apk/release/"
+
+# List the generated APKs
+find app/build/outputs/apk -name "*.apk" -type f

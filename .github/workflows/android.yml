@@ -30,19 +30,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Make scripts executable
-        run: |
-          chmod +x build-android.sh
-          chmod +x build-minimal.sh
-          chmod +x build-alternative.sh
+      - name: Make build script executable
+        run: chmod +x build-alternative.sh
 
-      - name: Debug gradlew
-        run: ./build-android.sh
-
-      - name: Try minimal build
-        if: failure()
-        run: ./build-minimal.sh
-
-      - name: Try alternative build
-        if: failure()
+      - name: Build with direct Gradle
         run: ./build-alternative.sh
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: parental-control-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: parental-control-release
+          path: app/build/outputs/apk/release/app-release*.apk
+          retention-days: 90
