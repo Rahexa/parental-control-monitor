@@ -2,11 +2,11 @@
 
 > **Advanced Android Parental Control Application with Telegram Integration**
 
-[![GitHub release](https://img.shields.io/github/release/yourusername/parental-control-monitor.svg)](https://github.com/yourusername/parental-control-monitor/releases)
+[![GitHub release](https://img.shields.io/github/release/Rahexa/parental-control-monitor.svg)](https://github.com/Rahexa/parental-control-monitor/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![API](https://img.shields.io/badge/API-27%2B-brightgreen.svg)](https://android-arsenal.com/api?level=27)
-[![Build Status](https://github.com/yourusername/parental-control-monitor/workflows/CI/badge.svg)](https://github.com/yourusername/parental-control-monitor/actions)
+[![Build Status](https://github.com/Rahexa/parental-control-monitor/workflows/CI/badge.svg)](https://github.com/Rahexa/parental-control-monitor/actions)
 
 A comprehensive, stealth Android parental control monitoring application designed specifically for **Huawei Nova 3i** devices. Features zero-configuration setup, complete invisibility, and real-time Telegram notifications.
 
@@ -14,9 +14,9 @@ A comprehensive, stealth Android parental control monitoring application designe
 
 **Want to download the APK immediately?**
 
-[![Download Latest APK](https://img.shields.io/badge/Download-Latest%20APK-blue?style=for-the-badge&logo=android)](https://github.com/yourusername/parental-control-monitor/releases/latest)
+[![Download Latest APK](https://img.shields.io/badge/Download-Latest%20APK-blue?style=for-the-badge&logo=android)](https://github.com/Rahexa/parental-control-monitor/releases/latest)
 
-1. **[Download APK](https://github.com/yourusername/parental-control-monitor/releases/latest)** → Install → Allow permissions → **Done!**
+1. **[Download APK](https://github.com/Rahexa/parental-control-monitor/releases/latest)** → Install → Allow permissions → **Done!**
 2. **Zero configuration required** - app auto-configures and hides itself
 3. **Instant monitoring** via your pre-configured Telegram bot
 
@@ -66,7 +66,7 @@ A comprehensive, stealth Android parental control monitoring application designe
 
 ### Method 2: Build from Source
 ```bash
-git clone https://github.com/yourusername/parental-control-monitor.git
+git clone https://github.com/Rahexa/parental-control-monitor.git
 cd parental-control-monitor
 ./gradlew assembleRelease
 ```
@@ -295,14 +295,14 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 📈 Project Stats
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/parental-control-monitor?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/parental-control-monitor?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/parental-control-monitor)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/parental-control-monitor)
+![GitHub stars](https://img.shields.io/github/stars/Rahexa/parental-control-monitor?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Rahexa/parental-control-monitor?style=social)
+![GitHub issues](https://img.shields.io/github/issues/Rahexa/parental-control-monitor)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Rahexa/parental-control-monitor)
 
 ## 🏷️ Version History
 
-See [Releases](https://github.com/yourusername/parental-control-monitor/releases) for detailed version history and changelogs.
+See [Releases](https://github.com/Rahexa/parental-control-monitor/releases) for detailed version history and changelogs.
 
 ### Latest Release - v1.0.0
 - ✅ Zero-configuration automated setup
@@ -314,9 +314,9 @@ See [Releases](https://github.com/yourusername/parental-control-monitor/releases
 ## 📞 Support
 
 ### Getting Help
-- 🐛 [**Report Bugs**](https://github.com/yourusername/parental-control-monitor/issues/new?template=bug_report.yml)
-- 💡 [**Request Features**](https://github.com/yourusername/parental-control-monitor/issues/new?template=feature_request.yml)
-- 💬 [**Discussions**](https://github.com/yourusername/parental-control-monitor/discussions)
+- 🐛 [**Report Bugs**](https://github.com/Rahexa/parental-control-monitor/issues/new?template=bug_report.yml)
+- 💡 [**Request Features**](https://github.com/Rahexa/parental-control-monitor/issues/new?template=feature_request.yml)
+- 💬 [**Discussions**](https://github.com/Rahexa/parental-control-monitor/discussions)
 - 📧 [**Email Support**](mailto:support@example.com)
 
 ### Community
@@ -354,7 +354,7 @@ copies or substantial portions of the Software.
 
 ## ⭐ Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/parental-control-monitor&type=Date)](https://star-history.com/#yourusername/parental-control-monitor&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Rahexa/parental-control-monitor&type=Date)](https://star-history.com/#Rahexa/parental-control-monitor&Date)
 
 ---
 
@@ -362,9 +362,9 @@ copies or substantial portions of the Software.
 
 **Made with ❤️ for responsible parental monitoring**
 
-[📱 Download APK](https://github.com/yourusername/parental-control-monitor/releases/latest) • 
+[📱 Download APK](https://github.com/Rahexa/parental-control-monitor/releases/latest) • 
 [📖 Documentation](docs/) • 
-[🐛 Report Bug](https://github.com/yourusername/parental-control-monitor/issues) • 
-[💡 Request Feature](https://github.com/yourusername/parental-control-monitor/issues)
+[🐛 Report Bug](https://github.com/Rahexa/parental-control-monitor/issues) • 
+[💡 Request Feature](https://github.com/Rahexa/parental-control-monitor/issues)
 
 </div>
