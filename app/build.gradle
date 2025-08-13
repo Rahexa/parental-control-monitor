@@ -18,6 +18,11 @@ android {
         manifestPlaceholders = [
             huaweiAppId: "your_huawei_app_id_here"
         ]
+        
+        // BuildConfig constants
+        buildConfigField "String", "TELEGRAM_BOT_TOKEN", '"YOUR_BOT_TOKEN_HERE"'
+        buildConfigField "String", "TELEGRAM_CHAT_ID", '"YOUR_CHAT_ID_HERE"'
+        buildConfigField "boolean", "AUTO_HIDE", "true"
     }
 
     buildTypes {

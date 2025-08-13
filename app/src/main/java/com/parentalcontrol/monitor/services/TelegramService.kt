@@ -245,7 +245,7 @@ class TelegramService {
         }
     }
     
-    private suspend fun sendMessage(text: String): Boolean {
+    suspend fun sendMessage(text: String): Boolean {
         return try {
             telegramApi?.sendMessage(
                 TelegramMessage(
