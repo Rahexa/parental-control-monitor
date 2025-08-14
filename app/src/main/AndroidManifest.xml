@@ -38,10 +38,6 @@
     
     <!-- Job scheduler for Huawei devices -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    
-    <!-- Accessibility permission for monitoring apps -->
-    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" 
-        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -52,7 +48,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ParentalControlMonitor"
-        android:description="Family safety and parental control application designed to help parents monitor their children's device usage with their consent. Provides screen time tracking and app usage statistics for educational purposes."
+        android:description="@string/app_description"
         tools:targetApi="31">
         
         <!-- Auto-Setup Activity (Default launcher) -->

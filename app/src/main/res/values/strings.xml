@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Family Time Tracker</string>
+    <string name="app_description">Family safety and parental control application designed to help parents monitor their children device usage with their consent. Provides screen time tracking and app usage statistics for educational purposes.</string>
     <string name="accessibility_service_description">Family Time Tracker helps parents monitor screen time and ensure healthy device usage habits. This educational tool provides insights into app usage patterns to promote digital wellness for the whole family.</string>
     <string name="notification_service_description">Provides helpful notifications about screen time goals and family device usage insights.</string>
     <string name="device_admin_description">Helps parents set healthy screen time limits and create a balanced digital environment for children.</string>
