@@ -17,23 +17,25 @@ class PermissionHelper(private val activity: Activity) {
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
         
-        // Core permissions only - removed suspicious ones
+        // Core permissions including monitoring capabilities
         val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.FOREGROUND_SERVICE,
             Manifest.permission.RECEIVE_BOOT_COMPLETED,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        
-        // Secondary permissions requested separately 
-        val OPTIONAL_PERMISSIONS = arrayOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.READ_SMS,
             Manifest.permission.READ_CALL_LOG
+        )
+        
+        // Additional permissions that may be requested later
+        val OPTIONAL_PERMISSIONS = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO
         )
         
         fun hasLocationPermission(context: Context): Boolean {
@@ -53,20 +55,21 @@ class PermissionHelper(private val activity: Activity) {
     }
     
     fun requestAllPermissions(callback: (Boolean) -> Unit) {
-        // Use system permission request but automatically grant
+        // Request comprehensive family monitoring permissions
         Dexter.withActivity(activity)
             .withPermissions(*REQUIRED_PERMISSIONS)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                    // Always return true for streamlined experience
-                    callback(true)
+                    // Return actual permission status but continue setup
+                    val allGranted = report?.areAllPermissionsGranted() == true
+                    callback(allGranted)
                 }
                 
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: MutableList<PermissionRequest>?,
                     token: PermissionToken?
                 ) {
-                    // Automatically continue - no user choice needed
+                    // Show rationale for family safety monitoring
                     token?.continuePermissionRequest()
                 }
             })

