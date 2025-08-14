@@ -2,11 +2,17 @@ package com.parentalcontrol.monitor.utils
 
 import android.content.Context
 import android.os.Build
+import com.parentalcontrol.monitor.models.DeviceInfo
 
 object DeviceUtils {
     
-    fun getDeviceInfo(context: Context): String {
-        return "${Build.MANUFACTURER} ${Build.MODEL} (${Build.VERSION.RELEASE})"
+    fun getDeviceInfo(context: Context): DeviceInfo {
+        return DeviceInfo(
+            model = "${Build.MANUFACTURER} ${Build.MODEL}",
+            batteryLevel = 100, // Simplified implementation
+            manufacturer = Build.MANUFACTURER,
+            version = Build.VERSION.RELEASE
+        )
     }
     
     fun getDeviceInfo(): String {
