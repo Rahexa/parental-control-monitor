@@ -55,9 +55,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build app (assemble APKs and bundles)
-        run: |
-          cd app
-          ../gradlew clean assembleDebug assembleRelease bundleDebug bundleRelease --no-daemon --stacktrace
+        run: ./gradlew :app:clean :app:assembleDebug :app:assembleRelease :app:bundleDebug :app:bundleRelease --no-daemon --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
