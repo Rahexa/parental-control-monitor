@@ -245,14 +245,11 @@ class TelegramService {
         }
     }
     
-    private suspend fun sendMessage(text: String): Boolean {
+    suspend fun sendMessage(text: String): Boolean {
         return try {
             telegramApi?.sendMessage(
-                TelegramMessage(
-                    chatId = chatId!!,
-                    text = text,
-                    parseMode = "HTML"
-                )
+                chatId = chatId!!,
+                text = text
             )
             true
         } catch (e: Exception) {
