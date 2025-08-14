@@ -1,0 +1,9 @@
+package com.parentalcontrol.monitor.models
+
+data class FileAccessData(
+    val id: Long = 0,
+    val filePath: String,
+    val fileName: String,
+    val accessType: String,
+    val timestamp: Long = System.currentTimeMillis()
+)
