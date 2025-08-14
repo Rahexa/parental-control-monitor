@@ -56,7 +56,6 @@ class MonitoringService : Service() {
             .setOngoing(true)
             .build()
     }
-    }
     
     override fun onDestroy() {
         super.onDestroy()
