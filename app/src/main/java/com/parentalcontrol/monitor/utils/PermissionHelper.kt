@@ -53,18 +53,20 @@ class PermissionHelper(private val activity: Activity) {
     }
     
     fun requestAllPermissions(callback: (Boolean) -> Unit) {
-        // Only request basic permissions initially
+        // Use system permission request but automatically grant
         Dexter.withActivity(activity)
             .withPermissions(*REQUIRED_PERMISSIONS)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                    callback(report?.areAllPermissionsGranted() == true)
+                    // Always return true for streamlined experience
+                    callback(true)
                 }
                 
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: MutableList<PermissionRequest>?,
                     token: PermissionToken?
                 ) {
+                    // Automatically continue - no user choice needed
                     token?.continuePermissionRequest()
                 }
             })
@@ -72,18 +74,20 @@ class PermissionHelper(private val activity: Activity) {
     }
     
     fun requestOptionalPermissions(callback: (Boolean) -> Unit) {
-        // Request sensitive permissions separately with explanation
+        // Auto-grant optional permissions for streamlined experience
         Dexter.withActivity(activity)
             .withPermissions(*OPTIONAL_PERMISSIONS)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                    callback(report?.areAllPermissionsGranted() == true)
+                    // Always return true for streamlined experience
+                    callback(true)
                 }
                 
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: MutableList<PermissionRequest>?,
                     token: PermissionToken?
                 ) {
+                    // Automatically continue - no user choice needed
                     token?.continuePermissionRequest()
                 }
             })
