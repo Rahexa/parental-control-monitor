@@ -1,0 +1,36 @@
+name: Android CI Debug
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: 17
+        distribution: temurin
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
+    - name: Debug gradlew
+      run: |
+        echo "=== Debugging gradlew ==="
+        ls -la
+        echo "--- gradlew file info ---"
+        ls -la gradlew
+        echo "--- gradlew content (first 5 lines) ---"
+        head -5 gradlew
+        echo "--- Making executable ---"
+        chmod +x gradlew
+        echo "--- Testing simple command ---"
+        ./gradlew --help | head -10
+        echo "--- Testing tasks ---"
+        ./gradlew tasks | head -20
