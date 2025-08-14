@@ -49,40 +49,46 @@ jobs:
       - name: Install Android SDK packages
         run: |
           yes | sdkmanager --licenses
-          yes | sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "platforms;android-33" "build-tools;33.0.2"
+          yes | sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Grant execute permission for gradlew (re-assert)
         run: chmod +x gradlew
-
-      - name: List projects and tasks (diagnostics)
-        run: |
-          ./gradlew projects | cat
-          ./gradlew tasks --all | cat
 
       - name: Build app (assemble APKs and bundles)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: ./gradlew -p app clean assembleDebug assembleRelease bundleDebug bundleRelease --no-daemon --stacktrace | cat
+        run: ./gradlew -p app clean assembleDebug assembleRelease bundleDebug bundleRelease --no-daemon --stacktrace
 
       - name: List outputs for debugging
         if: always()
         run: |
-          ls -R app/build || true
-          find app -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
+          find app/build/outputs -type f \( -name "*.apk" -o -name "*.aab" \) -print
 
-      - name: Run unit tests (best-effort)
-        run: |
-          ./gradlew testDebugUnitTest || true
-
-      - name: Upload build outputs (APKs/AABs)
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-build-outputs
-          path: |
-            app/build/outputs/apk/**/*.apk
-            app/build/outputs/**/*.aab
-          if-no-files-found: warn
-          retention-days: 14
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
 
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
 
+      - name: Upload Debug AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-aab
+          path: app/build/outputs/bundle/debug/app-debug.aab
+          if-no-files-found: ignore
+
+      - name: Upload Release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: ignore
