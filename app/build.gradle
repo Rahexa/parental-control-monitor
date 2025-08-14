@@ -1,25 +1,22 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
+    id 'com.google.devtools.ksp' version '1.9.25-1.0.20'
 }
 
 android {
     namespace 'com.parentalcontrol.monitor'
-    compileSdk 34
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.parentalcontrol.monitor"
         minSdk 27
-        targetSdk 34
+        targetSdk 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [
-            huaweiAppId: "your_huawei_app_id_here"
-        ]
+        manifestPlaceholders = [ huaweiAppId: "your_huawei_app_id_here" ]
         
-        // Build config fields for environment variables
         buildConfigField "String", "TELEGRAM_BOT_TOKEN", "\"${System.getenv('TELEGRAM_BOT_TOKEN') ?: 'your_bot_token_here'}\""
         buildConfigField "String", "TELEGRAM_CHAT_ID", "\"${System.getenv('TELEGRAM_CHAT_ID') ?: 'your_chat_id_here'}\""
         buildConfigField "boolean", "AUTO_HIDE", "true"
@@ -33,18 +30,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
+    kotlinOptions { jvmTarget = '21' }
     
-    buildFeatures {
-        viewBinding true
-        buildConfig true
-    }
+    buildFeatures { viewBinding true; buildConfig true }
 }
 
 dependencies {
@@ -56,21 +48,14 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.6.1'
     implementation 'androidx.room:room-ktx:2.6.1'
 
-    // Telegram Bot API
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
 
-    // File operations
     implementation 'commons-io:commons-io:2.11.0'
-
-    // Permissions
     implementation 'com.karumi:dexter:6.2.3'
-
-    // Location services
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
-    // Database annotations processor
     ksp 'androidx.room:room-compiler:2.6.1'
 
     testImplementation 'junit:junit:4.13.2'
