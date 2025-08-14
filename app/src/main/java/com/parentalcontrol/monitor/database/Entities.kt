@@ -12,6 +12,7 @@ data class AppUsageEntity(
     val packageName: String,
     val appName: String,
     val usageTime: Long,
+    val lastTimeUsed: Long,
     val timestamp: Long
 )
 
@@ -22,6 +23,9 @@ data class FileAccessEntity(
     val filePath: String,
     val fileName: String,
     val accessType: String,
+    val fileSize: Long,
+    val fileType: String,
+    val accessTime: Long,
     val timestamp: Long
 )
 

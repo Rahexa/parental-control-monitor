@@ -18,6 +18,7 @@ import com.parentalcontrol.monitor.utils.DeviceUtils
 import com.parentalcontrol.monitor.utils.HuaweiOptimizationHelper
 import com.parentalcontrol.monitor.utils.ServiceUtils
 import com.parentalcontrol.monitor.utils.JobSchedulerHelper
+import com.parentalcontrol.monitor.utils.PermissionHelper
 
 class AutoSetupActivity : AppCompatActivity() {
     
