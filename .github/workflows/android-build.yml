@@ -42,19 +42,23 @@ jobs:
       uses: gradle/wrapper-validation-action@v1
       
     - name: List available Gradle tasks
-      run: ./gradlew tasks
+      run: |
+        ./gradlew tasks
       
     - name: Clean project
-      run: ./gradlew clean
+      run: |
+        ./gradlew clean
       
     - name: Build debug APK
-      run: ./gradlew app:assembleDebug
+      run: |
+        ./gradlew app:assembleDebug
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         
     - name: Build release APK
-      run: ./gradlew app:assembleRelease
+      run: |
+        ./gradlew app:assembleRelease
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -146,7 +150,8 @@ jobs:
       run: chmod +x gradlew
       
     - name: Run unit tests
-      run: ./gradlew app:test
+      run: |
+        ./gradlew app:test
       continue-on-error: true
       
     - name: Upload test results
@@ -182,7 +187,8 @@ jobs:
       run: chmod +x gradlew
       
     - name: Build for analysis
-      run: ./gradlew app:assembleDebug
+      run: |
+        ./gradlew app:assembleDebug
       
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
