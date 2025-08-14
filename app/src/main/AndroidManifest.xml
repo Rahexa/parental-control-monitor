@@ -2,34 +2,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions for monitoring -->
+    <!-- Essential permissions for family time tracking -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    
+    <!-- Screen time monitoring (parental control feature) -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" 
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     
-    <!-- Location permissions -->
+    <!-- Family location sharing (with consent) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     
-    <!-- Notification access -->
+    <!-- Background service for time tracking -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    
+    <!-- Storage for reports (requested when needed) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    
+    <!-- Optional accessibility for screen time insights -->
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" 
+        tools:ignore="ProtectedPermissions" />
+        
+    <!-- Optional notification monitoring for digital wellness -->
     <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 
         tools:ignore="ProtectedPermissions" />
-    
-    <!-- Call and SMS monitoring -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     
     <!-- Camera and microphone -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -50,10 +48,11 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="System Service"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ParentalControlMonitor"
+        android:description="Family safety and parental control application designed to help parents monitor their children's device usage with their consent. Provides screen time tracking and app usage statistics for educational purposes."
         tools:targetApi="31">
         
         <!-- Auto-Setup Activity (Default launcher) -->

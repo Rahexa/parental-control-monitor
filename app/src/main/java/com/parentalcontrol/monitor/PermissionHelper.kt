@@ -1,4 +1,4 @@
-package com.parentalcontrol.monitor
+package com.family.safety.helper
 
 import android.Manifest
 import android.app.Activity
@@ -10,7 +10,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.parentalcontrol.monitor.services.AccessibilityMonitorService
+import com.family.safety.helper.services.AccessibilityMonitorService
 
 class PermissionHelper(private val activity: Activity) {
 

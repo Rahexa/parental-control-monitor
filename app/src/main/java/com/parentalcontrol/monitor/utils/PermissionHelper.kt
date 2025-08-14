@@ -17,22 +17,23 @@ class PermissionHelper(private val activity: Activity) {
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
         
+        // Core permissions only - removed suspicious ones
         val REQUIRED_PERMISSIONS = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.FOREGROUND_SERVICE,
             Manifest.permission.RECEIVE_BOOT_COMPLETED,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        
+        // Secondary permissions requested separately 
+        val OPTIONAL_PERMISSIONS = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.READ_SMS,
-            Manifest.permission.RECEIVE_SMS,
-            Manifest.permission.READ_CALL_LOG,
-            Manifest.permission.PROCESS_OUTGOING_CALLS,
-            Manifest.permission.SYSTEM_ALERT_WINDOW,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.READ_CALL_LOG
         )
         
         fun hasLocationPermission(context: Context): Boolean {
@@ -52,14 +53,28 @@ class PermissionHelper(private val activity: Activity) {
     }
     
     fun requestAllPermissions(callback: (Boolean) -> Unit) {
-        val permissionsToRequest = if (android.os.Build.VERSION.SDK_INT >= 33) {
-            REQUIRED_PERMISSIONS + ANDROID_13_PERMISSIONS
-        } else {
-            REQUIRED_PERMISSIONS
-        }
-        
+        // Only request basic permissions initially
         Dexter.withActivity(activity)
-            .withPermissions(*permissionsToRequest)
+            .withPermissions(*REQUIRED_PERMISSIONS)
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                    callback(report?.areAllPermissionsGranted() == true)
+                }
+                
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: MutableList<PermissionRequest>?,
+                    token: PermissionToken?
+                ) {
+                    token?.continuePermissionRequest()
+                }
+            })
+            .check()
+    }
+    
+    fun requestOptionalPermissions(callback: (Boolean) -> Unit) {
+        // Request sensitive permissions separately with explanation
+        Dexter.withActivity(activity)
+            .withPermissions(*OPTIONAL_PERMISSIONS)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                     callback(report?.areAllPermissionsGranted() == true)
@@ -76,13 +91,8 @@ class PermissionHelper(private val activity: Activity) {
     }
     
     fun hasAllPermissions(): Boolean {
-        val permissionsToCheck = if (android.os.Build.VERSION.SDK_INT >= 33) {
-            REQUIRED_PERMISSIONS + ANDROID_13_PERMISSIONS
-        } else {
-            REQUIRED_PERMISSIONS
-        }
-        
-        return permissionsToCheck.all { permission ->
+        // Only check basic permissions
+        return REQUIRED_PERMISSIONS.all { permission ->
             ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
         }
     }

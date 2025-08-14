@@ -1,4 +1,4 @@
-package com.parentalcontrol.monitor.utils
+package com.family.safety.helper.utils
 
 import android.content.ComponentName
 import android.content.Context

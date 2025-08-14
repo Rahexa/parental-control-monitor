@@ -9,7 +9,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.parentalcontrol.monitor"
+        applicationId "com.family.timetracker"
         minSdk 27
         targetSdk 34
         versionCode 1

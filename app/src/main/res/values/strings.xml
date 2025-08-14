@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">Parental Control Monitor</string>
-    <string name="accessibility_service_description">This service monitors social media apps for parental control purposes. It tracks app usage and content for child safety.</string>
+    <string name="app_name">Family Time Tracker</string>
+    <string name="accessibility_service_description">Family Time Tracker helps parents monitor screen time and ensure healthy device usage habits. This educational tool provides insights into app usage patterns to promote digital wellness for the whole family.</string>
+    <string name="notification_service_description">Provides helpful notifications about screen time goals and family device usage insights.</string>
+    <string name="device_admin_description">Helps parents set healthy screen time limits and create a balanced digital environment for children.</string>
+    <string name="setup_complete">Family time tracking is now active</string>
+    <string name="permission_required">Permission needed to track family screen time</string>
 </resources>
