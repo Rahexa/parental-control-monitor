@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 40
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Normalize gradlew (LF, no BOM) and permissions
@@ -51,11 +51,13 @@ jobs:
           yes | sdkmanager --licenses
           yes | sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Grant execute permission for gradlew (re-assert)
+      - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build app (assemble APKs and bundles)
-        run: ./gradlew clean assembleDebug assembleRelease bundleDebug bundleRelease --project-dir app --no-daemon --stacktrace
+        run: |
+          cd app
+          ../gradlew clean assembleDebug assembleRelease bundleDebug bundleRelease --no-daemon --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
