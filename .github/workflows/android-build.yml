@@ -55,15 +55,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build app (assemble APKs and bundles)
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: ./gradlew -p app clean assembleDebug assembleRelease bundleDebug bundleRelease --no-daemon --stacktrace
-
-      - name: List outputs for debugging
-        if: always()
-        run: |
-          find app/build/outputs -type f \( -name "*.apk" -o -name "*.aab" \) -print
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
