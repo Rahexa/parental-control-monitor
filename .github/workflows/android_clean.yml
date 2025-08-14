@@ -45,23 +45,23 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: List available tasks
+        shell: bash
         run: |
-          echo "Listing available Gradle tasks"
           chmod +x ./gradlew
-          ./gradlew tasks --no-daemon
+          ./gradlew tasks
         continue-on-error: true
 
       - name: Build debug APK  
+        shell: bash
         run: |
-          echo "Building debug APK"
-          chmod +x ./gradlew  
-          ./gradlew assembleDebug --no-daemon
+          chmod +x ./gradlew
+          ./gradlew assembleDebug
 
       - name: Build release APK
+        shell: bash
         run: |
-          echo "Building release APK"
           chmod +x ./gradlew
-          ./gradlew assembleRelease --no-daemon
+          ./gradlew assembleRelease
 
       - name: Sign APK
         if: github.event_name == 'release'
