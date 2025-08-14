@@ -51,23 +51,36 @@ jobs:
     - name: Build debug APK
       run: |
         echo "Starting build process..."
-        ./gradlew :app:assembleDebug --stacktrace --info
-        echo "Build completed with exit code: $?"
+        echo "Current directory: $(pwd)"
+        echo "Gradle wrapper version:"
+        ./gradlew --version
+        echo "Available tasks:"
+        ./gradlew tasks --all | grep -i assemble || true
+        echo "Building APK..."
+        ./gradlew assembleDebug --stacktrace --debug || {
+          echo "Build failed with assembleDebug, trying app:assembleDebug..."
+          ./gradlew app:assembleDebug --stacktrace --debug || {
+            echo "Both build commands failed, checking project structure..."
+            ls -la app/
+            exit 1
+          }
+        }
+        echo "Build completed successfully!"
         
     - name: List build outputs (comprehensive)
       run: |
-        echo "=== Current directory structure ==="
+        echo "=== Post-build directory structure ==="
         ls -la
         echo "=== App directory structure ==="
         ls -la app/ 2>/dev/null || echo "No app directory found"
-        echo "=== Build directory structure ==="
+        echo "=== Build directory exists? ==="
         ls -la app/build 2>/dev/null || echo "No app/build directory found"
-        echo "=== Build outputs directory ==="
-        find app/build -type f 2>/dev/null | head -20 || echo "No files in app/build"
+        echo "=== All files in app/build (if exists) ==="
+        find app/build -type f 2>/dev/null | head -30 || echo "No files in app/build"
         echo "=== Looking for APK files anywhere ==="
         find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found anywhere"
-        echo "=== Gradle build log tail ==="
-        ls -la ~/.gradle 2>/dev/null || echo "No gradle cache directory"
+        echo "=== Looking for any build artifacts ==="
+        find . -name "*.aab" -o -name "*.apk" -o -name "*.jar" 2>/dev/null | head -10 || echo "No build artifacts found"
         
     - name: Upload debug APK
       uses: actions/upload-artifact@v4
