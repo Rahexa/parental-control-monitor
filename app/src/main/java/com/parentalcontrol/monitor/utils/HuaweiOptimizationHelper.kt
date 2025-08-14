@@ -1,4 +1,4 @@
-package com.parentalcontrol.monitor.utils
+package com.family.safety.helper.utils
 
 import android.content.ComponentName
 import android.content.Context
@@ -187,41 +187,5 @@ class HuaweiOptimizationHelper(private val context: Context) {
            • Set to "Manual management"
            • Enable all options
         """.trimIndent()
-    }
-    
-    fun disableBatteryOptimization() {
-        try {
-            val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            openHuaweiPowerSettings()
-        }
-    }
-    
-    fun requestProtectedAppsAccess() {
-        try {
-            val intent = Intent().apply {
-                component = ComponentName("com.huawei.systemmanager", 
-                    "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            openHuaweiPowerSettings()
-        }
-    }
-    
-    fun configureAutoStart() {
-        try {
-            val intent = Intent().apply {
-                component = ComponentName("com.huawei.systemmanager", 
-                    "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            openHuaweiPowerSettings()
-        }
     }
 }

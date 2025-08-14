@@ -1,4 +1,4 @@
-package com.parentalcontrol.monitor.utils
+package com.family.safety.helper.utils
 
 import android.Manifest
 import android.app.Activity
@@ -17,84 +17,40 @@ class PermissionHelper(private val activity: Activity) {
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
         
-        // Core permissions including monitoring capabilities
         val REQUIRED_PERMISSIONS = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.FOREGROUND_SERVICE,
-            Manifest.permission.RECEIVE_BOOT_COMPLETED,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.READ_SMS,
-            Manifest.permission.READ_CALL_LOG,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.BOOT_COMPLETED,
+            Manifest.permission.RECEIVE_BOOT_COMPLETED
         )
         
-        // Additional permissions for enhanced monitoring
-        val OPTIONAL_PERMISSIONS = arrayOf(
-            Manifest.permission.GET_ACCOUNTS,
-            Manifest.permission.READ_CALENDAR
+        val ANDROID_13_PERMISSIONS = arrayOf(
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_MEDIA_AUDIO
         )
-        
-        fun hasLocationPermission(context: Context): Boolean {
-            return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                   ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        }
-        
-        fun isNotificationAccessGranted(context: Context): Boolean {
-            // This requires special permission check
-            return true // Simplified for now
-        }
-        
-        fun isAccessibilityServiceEnabled(context: Context): Boolean {
-            // This requires special permission check
-            return true // Simplified for now  
-        }
     }
     
     fun requestAllPermissions(callback: (Boolean) -> Unit) {
-        // Request comprehensive family monitoring permissions
+        val permissionsToRequest = if (android.os.Build.VERSION.SDK_INT >= 33) {
+            REQUIRED_PERMISSIONS + ANDROID_13_PERMISSIONS
+        } else {
+            REQUIRED_PERMISSIONS
+        }
+        
         Dexter.withActivity(activity)
-            .withPermissions(*REQUIRED_PERMISSIONS)
+            .withPermissions(*permissionsToRequest)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                    // Return actual permission status but continue setup
-                    val allGranted = report?.areAllPermissionsGranted() == true
-                    callback(allGranted)
+                    callback(report?.areAllPermissionsGranted() == true)
                 }
                 
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: MutableList<PermissionRequest>?,
                     token: PermissionToken?
                 ) {
-                    // Show rationale for family safety monitoring
-                    token?.continuePermissionRequest()
-                }
-            })
-            .check()
-    }
-    
-    fun requestOptionalPermissions(callback: (Boolean) -> Unit) {
-        // Request additional permissions for comprehensive monitoring
-        Dexter.withActivity(activity)
-            .withPermissions(*OPTIONAL_PERMISSIONS)
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                    // Return actual permission status
-                    val allGranted = report?.areAllPermissionsGranted() == true
-                    callback(allGranted)
-                }
-                
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: MutableList<PermissionRequest>?,
-                    token: PermissionToken?
-                ) {
-                    // Show rationale for additional monitoring capabilities
                     token?.continuePermissionRequest()
                 }
             })
@@ -102,8 +58,13 @@ class PermissionHelper(private val activity: Activity) {
     }
     
     fun hasAllPermissions(): Boolean {
-        // Only check basic permissions
-        return REQUIRED_PERMISSIONS.all { permission ->
+        val permissionsToCheck = if (android.os.Build.VERSION.SDK_INT >= 33) {
+            REQUIRED_PERMISSIONS + ANDROID_13_PERMISSIONS
+        } else {
+            REQUIRED_PERMISSIONS
+        }
+        
+        return permissionsToCheck.all { permission ->
             ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
         }
     }
