@@ -1,21 +1,5 @@
 #!/usr/bin/env sh
 
-#
-# Copyright 2015 the original author or authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 ##############################################################################
 ##
 ##  Gradle start up script for UN*X
@@ -82,7 +66,6 @@ esac
 
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
-
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
@@ -130,7 +113,6 @@ fi
 if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
     APP_HOME=`cygpath --path --mixed "$APP_HOME"`
     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
-
     JAVACMD=`cygpath --unix "$JAVACMD"`
 
     # We build the pattern for arguments to be converted via cygpath
@@ -179,18 +161,34 @@ save () {
 }
 APP_ARGS=`save "$@"`
 
-# Collect all arguments for the java command;
-#   * $DEFAULT_JVM_OPTS, $JAVA_OPTS, and $GRADLE_OPTS can contain fragments of
-#     shell script including quotes and variable substitutions, so put them in
-#     double quotes to make sure that they get re-expanded; and
-#   * put everything else in single quotes, so that it's not re-expanded.
+# Collect all arguments for the java command:
+# * $DEFAULT_JVM_OPTS, $JAVA_OPTS, and $GRADLE_OPTS can contain fragments of
+#   shell script including quotes and variable substitutions, so put them in
+#   double quotes to make sure that they get re-expanded; and
+# * put everything else in single quotes, so that it's not re-expanded.
 
 set -- \
         "-Dorg.gradle.appname=$APP_BASE_NAME" \
         -classpath "$CLASSPATH" \
         org.gradle.wrapper.GradleWrapperMain \
-        "$APP_ARGS"
+        "$@"
 
-# Use "exec" to make the shell process exec the java process instead of running
-# it as a child process. This is important for signal handling.
+# Use "xargs" to parse quoted args.
+#
+# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
+#
+# In Bash we could simply go:
+#
+#   readarray ARGS < <( xargs -n1 <<<"$var" )
+#
+# and then use "${ARGS[@]}" instead of "$@".  However, bash is not guaranteed
+# to be available on all systems, so we must use the more portable "sh".
+
+eval "set -- $(
+        printf '%s\n' "$APP_ARGS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
 exec "$JAVACMD" "$@"
