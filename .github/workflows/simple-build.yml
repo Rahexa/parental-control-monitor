@@ -11,6 +11,19 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Normalize gradlew (LF, no BOM) and permissions
+      run: |
+        python3 - <<'PY'
+        import codecs
+        p = 'gradlew'
+        data = open(p, 'rb').read()
+        if data.startswith(codecs.BOM_UTF8):
+            data = data[len(codecs.BOM_UTF8):]
+        data = data.replace(b'\r\n', b'\n').replace(b'\r', b'\n')
+        open(p, 'wb').write(data)
+        PY
+        chmod +x gradlew
       
     - uses: actions/setup-java@v4
       with:
@@ -19,7 +32,7 @@ jobs:
         
     - uses: android-actions/setup-android@v3
       
-    - name: Permissions
+    - name: Permissions (re-assert)
       run: chmod +x gradlew
       
     - name: Test Gradle
