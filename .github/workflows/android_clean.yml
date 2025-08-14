@@ -44,24 +44,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: List available tasks
-        shell: bash
-        run: |
-          chmod +x ./gradlew
-          ./gradlew tasks
-        continue-on-error: true
+      - name: Make build script executable
+        run: chmod +x build_script.sh
 
-      - name: Build debug APK  
-        shell: bash
-        run: |
-          chmod +x ./gradlew
-          ./gradlew assembleDebug
-
-      - name: Build release APK
-        shell: bash
-        run: |
-          chmod +x ./gradlew
-          ./gradlew assembleRelease
+      - name: Run build script
+        run: ./build_script.sh
 
       - name: Sign APK
         if: github.event_name == 'release'
