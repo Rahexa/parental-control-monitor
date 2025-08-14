@@ -1,17 +1,24 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.app    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
 }
 
 android {
     namespace 'com.parentalcontrol.monitor'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.parentalcontrol.monitor"
         minSdk 27
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -33,14 +40,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '17'
     }
-
+    
     buildFeatures {
         viewBinding true
         buildConfig true
