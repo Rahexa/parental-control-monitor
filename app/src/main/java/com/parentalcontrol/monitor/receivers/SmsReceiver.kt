@@ -10,5 +10,3 @@ class SmsReceiver : BroadcastReceiver() {
         // Handle SMS received
     }
 }
-    }
-}
