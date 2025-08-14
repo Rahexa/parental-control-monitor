@@ -1,10 +1,10 @@
-package com.family.safety.helper.utils
+package com.parentalcontrol.monitor.utils
 
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
-import com.family.safety.helper.services.HuaweiKeepAliveJobService
+import com.parentalcontrol.monitor.services.HuaweiKeepAliveJobService
 
 object JobSchedulerHelper {
     

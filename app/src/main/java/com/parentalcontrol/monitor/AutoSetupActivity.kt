@@ -1,4 +1,4 @@
-package com.family.safety.helper
+package com.parentalcontrol.monitor
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,13 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.family.safety.helper.services.MonitoringService
-import com.family.safety.helper.services.LocationService
-import com.family.safety.helper.services.TelegramService
-import com.family.safety.helper.utils.DeviceUtils
-import com.family.safety.helper.utils.HuaweiOptimizationHelper
-import com.family.safety.helper.utils.ServiceUtils
-import com.family.safety.helper.utils.JobSchedulerHelper
+import com.parentalcontrol.monitor.services.MonitoringService
+import com.parentalcontrol.monitor.services.LocationService
+import com.parentalcontrol.monitor.services.TelegramService
+import com.parentalcontrol.monitor.utils.DeviceUtils
+import com.parentalcontrol.monitor.utils.HuaweiOptimizationHelper
+import com.parentalcontrol.monitor.utils.ServiceUtils
+import com.parentalcontrol.monitor.utils.JobSchedulerHelper
 
 class AutoSetupActivity : AppCompatActivity() {
     
