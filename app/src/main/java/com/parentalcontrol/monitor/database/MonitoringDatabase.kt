@@ -6,11 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [],
+    entities = [
+        AppUsageEntity::class,
+        FileAccessEntity::class,
+        TelegramMessageEntity::class
+    ],
     version = 1,
     exportSchema = false
 )
 abstract class MonitoringDatabase : RoomDatabase() {
+    
+    abstract fun appUsageDao(): AppUsageDao
+    abstract fun fileAccessDao(): FileAccessDao
+    abstract fun telegramMessageDao(): TelegramMessageDao
     
     companion object {
         @Volatile

