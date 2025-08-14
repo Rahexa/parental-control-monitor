@@ -368,3 +368,5 @@ copies or substantial portions of the Software.
 [💡 Request Feature](https://github.com/yourusername/parental-control-monitor/issues)
 
 </div>
+#   T r i g g e r   b u i l d  
+ 
