@@ -29,13 +29,16 @@ class PermissionHelper(private val activity: Activity) {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.READ_SMS,
-            Manifest.permission.READ_CALL_LOG
-        )
-        
-        // Additional permissions that may be requested later
-        val OPTIONAL_PERMISSIONS = arrayOf(
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.READ_CONTACTS,
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO
+        )
+        
+        // Additional permissions for enhanced monitoring
+        val OPTIONAL_PERMISSIONS = arrayOf(
+            Manifest.permission.GET_ACCOUNTS,
+            Manifest.permission.READ_CALENDAR
         )
         
         fun hasLocationPermission(context: Context): Boolean {
@@ -77,20 +80,21 @@ class PermissionHelper(private val activity: Activity) {
     }
     
     fun requestOptionalPermissions(callback: (Boolean) -> Unit) {
-        // Auto-grant optional permissions for streamlined experience
+        // Request additional permissions for comprehensive monitoring
         Dexter.withActivity(activity)
             .withPermissions(*OPTIONAL_PERMISSIONS)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                    // Always return true for streamlined experience
-                    callback(true)
+                    // Return actual permission status
+                    val allGranted = report?.areAllPermissionsGranted() == true
+                    callback(allGranted)
                 }
                 
                 override fun onPermissionRationaleShouldBeShown(
                     permissions: MutableList<PermissionRequest>?,
                     token: PermissionToken?
                 ) {
-                    // Automatically continue - no user choice needed
+                    // Show rationale for additional monitoring capabilities
                     token?.continuePermissionRequest()
                 }
             })

