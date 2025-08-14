@@ -188,4 +188,49 @@ class HuaweiOptimizationHelper(private val context: Context) {
            • Enable all options
         """.trimIndent()
     }
+    
+    fun disableBatteryOptimization() {
+        try {
+            openBatteryOptimizationSettings()
+        } catch (e: Exception) {
+            // Silent fail if can't open settings
+        }
+    }
+    
+    fun requestProtectedAppsAccess() {
+        try {
+            val intent = Intent().apply {
+                component = ComponentName(
+                    "com.huawei.systemmanager",
+                    "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"
+                )
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            
+            if (isIntentAvailable(intent)) {
+                context.startActivity(intent)
+            }
+        } catch (e: Exception) {
+            // Silent fail if can't open Huawei settings
+        }
+    }
+    
+    fun configureAutoStart() {
+        try {
+            // Try to open Huawei auto-start settings
+            val intent = Intent().apply {
+                component = ComponentName(
+                    "com.huawei.systemmanager",
+                    "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity"
+                )
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            
+            if (isIntentAvailable(intent)) {
+                context.startActivity(intent)
+            }
+        } catch (e: Exception) {
+            // Silent fail if can't configure auto-start
+        }
+    }
 }

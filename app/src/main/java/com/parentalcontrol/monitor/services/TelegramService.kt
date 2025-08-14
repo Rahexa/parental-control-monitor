@@ -1,9 +1,12 @@
 package com.parentalcontrol.monitor.services
 
+import android.app.Service
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.IBinder
 import com.parentalcontrol.monitor.api.TelegramApi
 import com.parentalcontrol.monitor.database.MonitoringDatabase
 import com.parentalcontrol.monitor.models.AppUsageData
@@ -17,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TelegramService {
+class TelegramService : Service() {
     
     private var telegramApi: TelegramApi? = null
     private var botToken: String? = null
@@ -25,6 +28,23 @@ class TelegramService {
     private var context: Context? = null
     private var database: MonitoringDatabase? = null
     private val scope = CoroutineScope(Dispatchers.IO)
+    
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+    
+    override fun onCreate() {
+        super.onCreate()
+        initialize(this)
+    }
+    
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+    }
     
     fun initialize(context: Context) {
         this.context = context

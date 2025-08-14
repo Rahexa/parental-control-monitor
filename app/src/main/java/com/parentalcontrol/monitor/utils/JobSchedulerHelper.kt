@@ -20,7 +20,7 @@ object JobSchedulerHelper {
     fun scheduleKeepAliveJob(context: Context) {
         // Basic keep alive job implementation
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        val componentName = ComponentName(context, "com.parentalcontrol.monitor.services.HuaweiKeepAliveJobService")
+        val componentName = ComponentName(context, com.parentalcontrol.monitor.services.HuaweiKeepAliveJobService::class.java)
         val jobInfo = JobInfo.Builder(1001, componentName)
             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
             .setPersisted(true)

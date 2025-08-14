@@ -210,7 +210,10 @@ class AutoSetupActivity : AppCompatActivity() {
                 Time: ${java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())}
                 """.trimIndent()
                 
-                telegramService.sendMessage(message)
+                // Launch coroutine for suspend function
+                lifecycleScope.launch {
+                    telegramService.sendMessage(message)
+                }
                 
             } catch (e: Exception) {
                 // Silent fail - don't interrupt setup
