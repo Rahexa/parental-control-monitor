@@ -79,14 +79,20 @@ class AutoSetupActivity : AppCompatActivity() {
                 
                 showToast("Setup complete - app is now monitoring")
                 
-                // Auto-hide after 3 seconds
+                // Auto-hide after 3 seconds with safety check
                 setupHandler.postDelayed({
-                    finishAndHide()
+                    if (!isFinishing && !isDestroyed) {
+                        finishAndHide()
+                    }
                 }, 3000)
                 
             } catch (e: Exception) {
                 showToast("Setup error - please restart app")
-                finish()
+                try {
+                    finish()
+                } catch (e2: Exception) {
+                    // Silent fail
+                }
             }
         }
     }
@@ -243,9 +249,20 @@ class AutoSetupActivity : AppCompatActivity() {
     }
     
     private fun finishAndHide() {
-        // Move to background
-        moveTaskToBack(true)
-        finish()
+        try {
+            // Move to background safely
+            if (!isFinishing && !isDestroyed) {
+                moveTaskToBack(true)
+                finish()
+            }
+        } catch (e: Exception) {
+            // Fallback: just finish the activity
+            try {
+                finish()
+            } catch (e2: Exception) {
+                // Silent fail if we can't even finish
+            }
+        }
     }
     
     private fun showToast(message: String) {
