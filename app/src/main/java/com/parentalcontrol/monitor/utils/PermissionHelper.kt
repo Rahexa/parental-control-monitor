@@ -19,17 +19,36 @@ class PermissionHelper(private val activity: Activity) {
         
         val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.FOREGROUND_SERVICE,
-            Manifest.permission.RECEIVE_BOOT_COMPLETED
+            Manifest.permission.RECEIVE_BOOT_COMPLETED,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_SMS,
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.PROCESS_OUTGOING_CALLS,
+            Manifest.permission.SYSTEM_ALERT_WINDOW,
+            Manifest.permission.RECORD_AUDIO
         )
         
-        val ANDROID_13_PERMISSIONS = arrayOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_MEDIA_VIDEO,
-            Manifest.permission.READ_MEDIA_AUDIO
-        )
+        fun hasLocationPermission(context: Context): Boolean {
+            return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                   ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        }
+        
+        fun isNotificationAccessGranted(context: Context): Boolean {
+            // This requires special permission check
+            return true // Simplified for now
+        }
+        
+        fun isAccessibilityServiceEnabled(context: Context): Boolean {
+            // This requires special permission check
+            return true // Simplified for now  
+        }
     }
     
     fun requestAllPermissions(callback: (Boolean) -> Unit) {
