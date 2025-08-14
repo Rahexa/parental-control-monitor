@@ -10,6 +10,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.parentalcontrol.monitor.services.AccessibilityMonitorService
 
 class PermissionHelper(private val activity: Activity) {
 
