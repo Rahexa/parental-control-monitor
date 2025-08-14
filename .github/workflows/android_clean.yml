@@ -46,19 +46,22 @@ jobs:
 
       - name: List available tasks
         run: |
-          echo "Running gradlew tasks..."
-          bash -c "./gradlew tasks"
+          echo "Listing available Gradle tasks"
+          chmod +x ./gradlew
+          ./gradlew tasks --no-daemon
         continue-on-error: true
 
       - name: Build debug APK  
         run: |
-          echo "Running gradlew assembleDebug..."
-          bash -c "./gradlew assembleDebug"
+          echo "Building debug APK"
+          chmod +x ./gradlew  
+          ./gradlew assembleDebug --no-daemon
 
       - name: Build release APK
         run: |
-          echo "Running gradlew assembleRelease..."
-          bash -c "./gradlew assembleRelease"
+          echo "Building release APK"
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --no-daemon
 
       - name: Sign APK
         if: github.event_name == 'release'
