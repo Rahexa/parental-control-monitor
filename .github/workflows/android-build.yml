@@ -53,11 +53,11 @@ jobs:
       - name: Grant execute permission for gradlew (re-assert)
         run: chmod +x gradlew
 
-      - name: Build Debug and Release APKs (app module)
+      - name: Build Debug/Release APKs and App Bundles (app module)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: ./gradlew :app:clean :app:assembleDebug :app:assembleRelease --no-daemon --stacktrace | cat
+        run: ./gradlew :app:clean :app:assembleDebug :app:assembleRelease :app:bundleDebug :app:bundleRelease --no-daemon --stacktrace | cat
 
       - name: List outputs for debugging
         if: always()
@@ -68,13 +68,12 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test | cat
 
-      - name: Upload APK artifacts
+      - name: Upload build outputs (APKs/AABs)
         uses: actions/upload-artifact@v4
         with:
-          name: apk-builds
-          path: |
-            app/build/outputs/apk/**/*.apk
-            app/build/outputs/**/*.aab
+          name: app-build-outputs
+          path: app/build/outputs/**
+          if-no-files-found: warn
           retention-days: 14
 
 
