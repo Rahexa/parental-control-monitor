@@ -68,6 +68,8 @@ jobs:
           path: |
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/**/*debug*.apk
+            app/build/outputs/apk/**/debug/*.apk
+            **/*debug*.apk
           if-no-files-found: warn
           
       - name: Upload release APK
@@ -77,6 +79,16 @@ jobs:
           path: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/apk/**/*release*.apk
+            app/build/outputs/apk/**/release/*.apk
+            **/*release*.apk
+          if-no-files-found: warn
+
+      - name: Upload all APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-apks
+          path: |
+            **/*.apk
           if-no-files-found: warn
 
       - name: Create Release

@@ -4,22 +4,20 @@ set -e
 echo "Setting up gradlew permissions..."
 chmod +x ./gradlew
 
-echo "Testing simple gradle command..."
-./gradlew --version || echo "Gradlew version failed, trying alternative..."
-
-echo "Using gradle wrapper with explicit wrapper task..."
-./gradlew wrapper --gradle-version 8.2 || echo "Wrapper task failed, continuing..."
-
-echo "Building debug APK with gradle command..."
-gradle assembleDebug || echo "Direct gradle failed, trying gradlew..."
-
-echo "Building debug APK with gradlew..."
-./gradlew assembleDebug || echo "Gradlew assembleDebug failed"
+echo "Building debug APK..."
+./gradlew assembleDebug
 
 echo "Building release APK..."
-./gradlew assembleRelease || gradle assembleRelease || echo "Release build failed"
+./gradlew assembleRelease
 
-echo "Listing build outputs..."
-find . -name "*.apk" -type f
+echo "Listing all build outputs with details..."
+find . -name "*.apk" -type f -exec ls -la {} \;
 
-echo "Build script completed!"
+echo "Checking expected output directories..."
+ls -la app/build/outputs/ || echo "outputs directory not found"
+ls -la app/build/outputs/apk/ || echo "apk directory not found"
+
+echo "Finding all directories under build/outputs..."
+find app/build/outputs -type d || echo "No build outputs found"
+
+echo "Build completed successfully!"
