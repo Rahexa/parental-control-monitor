@@ -42,7 +42,7 @@ jobs:
       run: chmod +x gradlew
       
     - name: Build release APK
-      run: ./gradlew assembleRelease --stacktrace
+      run: ./gradlew app:assembleRelease
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

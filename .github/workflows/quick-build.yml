@@ -37,7 +37,7 @@ jobs:
       run: chmod +x gradlew
       
     - name: Quick debug build
-      run: ./gradlew assembleDebug --parallel --build-cache
+      run: ./gradlew app:assembleDebug --parallel --build-cache
       env:
         TELEGRAM_BOT_TOKEN: "dummy_token_for_build"
         TELEGRAM_CHAT_ID: "dummy_chat_id"
