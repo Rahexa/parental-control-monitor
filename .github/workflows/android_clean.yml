@@ -42,16 +42,14 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: List Gradle tasks
-        run: ./gradlew tasks --all --stacktrace --info
+        run: ./gradlew tasks --all
         continue-on-error: true
 
       - name: Build debug APK
-        run: |
-          ./gradlew assembleDebug
+        run: ./gradlew assembleDebug
 
       - name: Build release APK
-        run: |
-          ./gradlew assembleRelease
+        run: ./gradlew assembleRelease
 
       - name: Sign APK
         if: github.event_name == 'release'
