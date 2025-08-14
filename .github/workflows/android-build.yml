@@ -53,16 +53,17 @@ jobs:
       - name: Grant execute permission for gradlew (re-assert)
         run: chmod +x gradlew
 
-      - name: Build Debug and Release APKs
+      - name: Build Debug and Release APKs (app module)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: ./gradlew clean assembleDebug assembleRelease | cat
+        run: ./gradlew :app:clean :app:assembleDebug :app:assembleRelease --no-daemon --stacktrace | cat
 
       - name: List outputs for debugging
         if: always()
         run: |
           ls -R app/build/outputs || true
+          find app -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
 
       - name: Run unit tests
         run: ./gradlew test | cat
