@@ -63,13 +63,14 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: ./gradlew -p app clean assembleDebug assembleRelease --no-daemon --stacktrace | cat
+        working-directory: app
+        run: ../gradlew clean assembleDebug assembleRelease --no-daemon --stacktrace | cat
 
       - name: List outputs for debugging
         if: always()
         run: |
-          ls -R app/build || true
-          find app -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
+          ls -R build || true
+          find . -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
 
       - name: Upload build outputs (APKs/AABs)
         uses: actions/upload-artifact@v4
