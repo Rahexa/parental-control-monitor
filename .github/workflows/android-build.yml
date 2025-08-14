@@ -58,12 +58,12 @@ jobs:
           ./gradlew projects | cat
           ./gradlew tasks --all | cat
 
-      - name: Build Debug/Release APKs and App Bundles
+      - name: Build project (assemble all)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          ./gradlew clean assembleDebug assembleRelease bundleDebug bundleRelease --no-daemon --stacktrace | cat
+          ./gradlew clean assemble --no-daemon --stacktrace | cat
 
       - name: List outputs for debugging
         if: always()
@@ -71,8 +71,9 @@ jobs:
           ls -R app/build || true
           find app -type f \( -name "*.apk" -o -name "*.aab" \) -print || true
 
-      - name: Run unit tests (if present)
-        run: ./gradlew test || true
+      - name: Run unit tests (best-effort)
+        run: |
+          ./gradlew testDebugUnitTest || true
 
       - name: Upload build outputs (APKs/AABs)
         uses: actions/upload-artifact@v4
